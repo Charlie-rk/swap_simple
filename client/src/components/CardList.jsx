@@ -1,16 +1,57 @@
+/* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import ReactDOM from "react-dom";
-import React from "react";
+import React, { useState } from "react";
 import { Button, Card } from "flowbite-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content'
 
 const CardList = ({ travel,pnr }) => {
-     const travelId=travel._id;
-    console.log(travelId);
-    console.log({pnr});
+ 
+  console.log({pnr});
+  const travelId=travel._id;
+  console.log(travelId);
+  const MySwal = withReactContent(Swal);
+     const handleSwap = () => {
+   //   console.log("Hiia ams ");
+      MySwal.fire({
+        title: '<p class="text-black ">Are you sure for SWAP?</p>  ',
+        icon: 'question',
+        showCancelButton: true,
+        showDenyButton: true,
+       // confirmButtonText: '<span  class="text-black" >Save As</span>',
+        confirmButtonText: '<button class="font-bold" >Request User </button>',
+        cancelButtonText: '<button class="font-bold">Cancel</button>',
+        denyButtonText: '<button class="font-bold">Pull in Queue</button>',
+        allowEscapeKey: false,
+        customClass: {
+          popup: 'my-popup',
+          actions: 'flex '
+        },
+        didOpen: (popup) => {
+        //  console.log(popup);
+          popup.querySelector('.swal2-icon').classList.add('font-bold');
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          console.log("hi--1");
+        // go for email router -- 
 
-
+        } else if (result.isDenied) {
+          // Handle deny action
+          console.log("hi--2");
+          // go for pull request 
+        } else {
+          // Handle cancel action
+          // cancel case no action 
+          console.log("hi--3");
+        }
+      });
+    };
+    
+    
   return (
     <Card className="max-w-sm bg-slate-100">
       <div>
@@ -66,7 +107,7 @@ const CardList = ({ travel,pnr }) => {
         </p>
       </div>
 
-      <button
+      <button  onClick={handleSwap}
         type="button"
         className="text-black font-bold bg-gradient-to-r from-purple-500 via-purple-200 to-blue-500 hover:scale-110 duration-500 focus:ring-4 focus:outline-none focus:ring-blue-300  rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
       >  
@@ -75,7 +116,7 @@ const CardList = ({ travel,pnr }) => {
   </span>
 
 
-        <span className="mx-auto">Ask for Swap </span>
+        <span className="mx-auto"  >Ask for Swap </span>
         <svg
           className=" rtl:rotate-180 w-12 h-3.5 ms-2"
           aria-hidden="true"
