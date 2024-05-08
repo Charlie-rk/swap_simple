@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const userSchema=new mongoose.Schema({
     username:{
         type:String,
-        required:true,
+        // required:true,
         unique:true,
     },
     email:{
@@ -23,6 +23,22 @@ const userSchema=new mongoose.Schema({
         type:Boolean,
         default:false,
     },
+    notifications: [
+        {
+          message: {
+            type: String,
+            required: true,
+          },
+          createdAt: {
+            type: Date,
+            default: Date.now,
+          },
+          seen: {
+            type: Boolean,
+            default: false,
+          },
+        },
+      ],
 },{timestamps:true}
 );
 

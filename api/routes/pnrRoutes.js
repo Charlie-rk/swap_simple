@@ -6,8 +6,7 @@ import PNRController from "../controllers/pnrController.js";
 import { applyForSwap } from "../controllers/travelController.js";
 import Travel from "../models/travelModel.js";
 import User from "../models/userModel.js";
-
-
+import { swapRequestNotification, acceptSwapRequest, confirmSwapSeat } from "../controllers/notificationController.js";
 // Create an instance of PNRController
 //sangamkr.mishra
 //const apiKey = "faa6bac541mshee4e9bf88a81448p12c76ajsnc853689715d2"; // You can fetch this from environment variables if needed
@@ -240,5 +239,11 @@ router.post("/:pnrNumber/swap-seat", async (req, res) => {
       .json({ success: false, message: "Error processing swap request" });
   }
 });
+
+//For sending notifications
+// router.post("/send-notification",sendNotification);
+router.post("/swapRequestNotification",swapRequestNotification);
+router.post("/acceptSwap", acceptSwapRequest);
+router.post("/confirmSwap", confirmSwapSeat);
 
 export default router;
