@@ -27,24 +27,6 @@ const sendMail = async (mailOptions) => {
     // Logging and returning instead of throwing error
   }
 };
-Error sending email Error: Invalid login: 535-5.7.8 Username and Password not accepted. For more information, go to
-535 5.7.8  https://support.google.com/mail/?p=BadCredentials b11-20020a170902d50b00b001eb2f4648d3sm11594166plg.228 - gsmtp
-    at SMTPConnection._formatError (/home/sangam/Desktop/Train Booking/swap_simple/node_modules/nodemailer/lib/smtp-connection/index.js:798:19)
-    at SMTPConnection._actionAUTHComplete (/home/sangam/Desktop/Train Booking/swap_simple/node_modules/nodemailer/lib/smtp-connection/index.js:1577:34)
-    at SMTPConnection.<anonymous> (/home/sangam/Desktop/Train Booking/swap_simple/node_modules/nodemailer/lib/smtp-connection/index.js:554:26)
-    at SMTPConnection._processResponse (/home/sangam/Desktop/Train Booking/swap_simple/node_modules/nodemailer/lib/smtp-connection/index.js:982:20)
-    at SMTPConnection._onData (/home/sangam/Desktop/Train Booking/swap_simple/node_modules/nodemailer/lib/smtp-connection/index.js:763:14)
-    at SMTPConnection._onSocketData (/home/sangam/Desktop/Train Booking/swap_simple/node_modules/nodemailer/lib/smtp-connection/index.js:195:44)
-    at TLSSocket.emit (node:events:517:28)
-    at addChunk (node:internal/streams/readable:368:12)
-    at readableAddChunk (node:internal/streams/readable:341:9)
-    at Readable.push (node:internal/streams/readable:278:10) {
-  code: 'EAUTH',
-  response: '535-5.7.8 Username and Password not accepted. For more information, go to\n' +
-    '535 5.7.8  https://support.google.com/mail/?p=BadCredentials b11-20020a170902d50b00b001eb2f4648d3sm11594166plg.228 - gsmtp',
-  responseCode: 535,
-  command: 'AUTH PLAIN'
-}
 export const sendNotification = async ({ userId1, userId2, message1, message2, travelId1, travelId2 }) => {
   try {
     const user1 = await User.findById(userId1);
