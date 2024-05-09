@@ -89,10 +89,10 @@ export default function SignUp() {
       setLoading(true);
       setErrorMessage(null);
       
-      // Wait until OTP verification is successful
-      console.log("byee");
-      //  onSignup();
-      console.log("HOOO");
+      // // Wait until OTP verification is successful
+      // console.log("byee");
+      // //  onSignup();
+      // console.log("HOOO");
 
       // Proceed with user registration after OTP verification
       const res = await fetch('/api/auth/signup', {
