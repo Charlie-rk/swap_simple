@@ -13,6 +13,7 @@ import SeatSelectionForm from './components/SeatSelectionForm';
 import SwapResults from './pages/Swapresults';
 import BackToTop from './components/BackToTop';
 import PrivateRoute from './components/PrivateRoute';
+
 export default function App() {
   return (
     // <div>
@@ -23,9 +24,11 @@ export default function App() {
     <BackToTop/>
     <Routes>  
          <Route path='/' element={<Home/>} />
+        
          <Route path='/about' element={<About/>} />
          <Route path='/sign-in' element={<SignIn/>} />
          <Route path='/sign-up' element={<SignUp/>} />
+      
          <Route element={<PrivateRoute />}>
           <Route path='/dashboard' element={<Dashboard />} />
         </Route>
