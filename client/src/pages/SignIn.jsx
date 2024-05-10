@@ -1,6 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
 import { Alert, Button, Label, Spinner, TextInput } from 'flowbite-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -9,12 +9,27 @@ import {
   signInFailure,
 } from '../redux/user/userSlice';
 import OAuth from '../components/OAuth';
-
+import { ToastContainer, toast } from 'react-toastify';
+  import 'react-toastify/dist/ReactToastify.css';
+  import { FaEye } from "react-icons/fa";
+import { FaEyeSlash } from "react-icons/fa6";
 export default function SignIn() {
+
+  
+  const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({});
   const { loading, error: errorMessage } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  
+  useEffect(()=>{
+    const notify = () => toast.success("🤗🤗 Welcome to SigIn Page 🤗🤗");
+    notify();
+  },[])
+   // handle toggle
+   const toggle = () => {
+    setOpen(!open);
+  };
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
   };
@@ -45,6 +60,11 @@ export default function SignIn() {
   };
   return (
     <div className='min-h-screen mt-20'>
+       <ToastContainer 
+         position='top-center'
+         
+         autoClose={3000}
+        />
       <div className='flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center gap-5'>
         {/* left */}
         <div className='flex-1'>
@@ -72,7 +92,31 @@ export default function SignIn() {
                 onChange={handleChange}
               />
             </div>
-            <div>
+            <div className="relative">
+              <Label value="Your password" />
+              <TextInput
+                type={open ? "text" : "password"}
+                placeholder="Password"
+                id="password"
+                onChange={handleChange}
+              />
+              {open ? (
+                <div className="absolute top-1/2 right-2 transform -translate-y-1/2 cursor-pointer">
+                  <FaEyeSlash
+                    onClick={toggle}
+                    className="mt-5 text-2xl font-bold hover:text-black-500 hover:scale-150"
+                  />
+                </div>
+              ) : (
+                <div className="mt-2.5 absolute top-1/2 right-2 transform -translate-y-1/2 cursor-pointer">
+                  <FaEye
+                    onClick={toggle}
+                    className="text-2xl hover:text-black-500 hover:scale-150"
+                  />
+                </div>
+              )}
+            </div>
+            {/* <div>
               <Label value='Your password' />
               <TextInput
                 type='password'
@@ -80,7 +124,7 @@ export default function SignIn() {
                 id='password'
                 onChange={handleChange}
               />
-            </div>
+            </div> */}
             <Button
               gradientDuoTone='purpleToPink'
               type='submit'

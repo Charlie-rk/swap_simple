@@ -1,6 +1,7 @@
 import bcryptjs from 'bcryptjs';
 import { errorHandler } from './../utilis/error.js';
 import User from '../models/userModel.js';
+import Request from '../models/requestModel.js';
 
 export const test = (req, res) => {
   res.json({ message: 'API is working!' });
@@ -131,3 +132,27 @@ export const getUser = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getRequest = async (req, res, next) => {
+  console.log("RK________999999");
+  try {
+    console.log("Pavri");
+    //console.log(req);
+   
+    const requests = await Request.find();
+      console.log(requests);
+      res.status(200).json({
+        status: true,
+        requests: requests
+      });
+   
+    
+    
+  } catch (error) {
+    console.error("Error fetching requests:", error);
+    res.status(500).json({
+      status: false,
+      message: "Error fetching requests"
+    });
+  }
+}

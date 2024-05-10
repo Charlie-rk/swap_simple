@@ -13,6 +13,7 @@ function SeatSelectionForm() {
   const [coachInput, setCoachInput] = useState("");
   const [selectedSeats, setSelectedSeats] = useState([]);
   const { theme } = useSelector((state) => state.theme);
+  const { currentUser } = useSelector((state) => state.user);
   const handleOnClick = async () => {
     try {
       const preferenceList = [];
@@ -32,6 +33,7 @@ function SeatSelectionForm() {
         body: JSON.stringify({
           selectedCoaches: selectedCoaches,
           preferenceList: preferenceList,
+          name:currentUser.username,
         }),
       });
       
@@ -41,9 +43,18 @@ function SeatSelectionForm() {
       if (response.success) {
         console.log(response.success);
         console.log(response.message);
-        navigate(`/SwapResults/${pnrNumber}`, { state: { results: response.travels } });
+        navigate(`/SwapResults/${pnrNumber}`, { state: { results1: response.partiallySwaps,result2:response.perfectSwaps} });
       } else {
-        console.log("Unsuccessful response", response.message);
+        navigate(`/SwapResults/${pnrNumber}`, { state: { results1: null,result2:null} });
+        //  return (
+        //   <>
+        //     <div className="tex mt-40 w-full mb-96 red-600 font-bold text-2xl">
+        //       <p className="text-center font-serif text-9xl">😭</p>
+        //       <p className="text-center font-serif "> 😒No travels found😢</p>
+        //       <p className="text-center font-serif">😊Wait for SOMEONE FOR THE REQUEST 😊</p>
+        //     </div>
+        //   </> )
+       // console.log("Unsuccessful response", response.message);
       }
     } catch (error) {
       console.error("Error processing swap request:", error);

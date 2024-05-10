@@ -13,11 +13,8 @@ import SeatSelectionForm from './components/SeatSelectionForm';
 import SwapResults from './pages/Swapresults';
 import BackToTop from './components/BackToTop';
 import PrivateRoute from './components/PrivateRoute';
-<<<<<<< HEAD
 
-=======
 import NotificationPage from './pages/NotificationPage';
->>>>>>> 198492d77c328e0fc29b8ab5514196b2bbcab69b
 export default function App() {
   return (
     // <div>
@@ -28,11 +25,8 @@ export default function App() {
     <BackToTop/>
     <Routes>  
          <Route path='/' element={<Home/>} />
-<<<<<<< HEAD
         
-=======
          <Route path='/test' element={<NotificationPage/>}/>
->>>>>>> 198492d77c328e0fc29b8ab5514196b2bbcab69b
          <Route path='/about' element={<About/>} />
          <Route path='/sign-in' element={<SignIn/>} />
          <Route path='/sign-up' element={<SignUp/>} />
@@ -40,7 +34,7 @@ export default function App() {
          <Route element={<PrivateRoute />}>
           <Route path='/dashboard' element={<Dashboard />} />
         </Route>
-         <Route path='/projects' element={<Projects/>} />
+         <Route path='/request' element={<Projects/>} />
          <Route element={<PrivateRoute />}>
           <Route path='/swap-request/:pnrNumber' element={<SeatSelectionForm />} />
         </Route>

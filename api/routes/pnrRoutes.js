@@ -6,6 +6,7 @@ import PNRController from "../controllers/pnrController.js";
 import { applyForSwap } from "../controllers/travelController.js";
 import Travel from "../models/travelModel.js";
 import User from "../models/userModel.js";
+import Request from "../models/requestModel.js";
 import { swapRequestNotification, acceptSwapRequest, confirmSwapSeat } from "../controllers/notificationController.js";
 // Create an instance of PNRController
 //sangamkr.mishra
@@ -141,7 +142,7 @@ router.get("/:pnrNumber", async (req, res) => {
 // }
 // });
 
-router.post("/:pnrNumber/swap-seat", async (req, res) => {
+router.post("/:pnrNumber/swap-seat", async (req, res,next) => {
   console.log("Received swap request:");
   console.log(req.body);
   console.log(req.body.selectedCoaches);
@@ -164,8 +165,11 @@ router.post("/:pnrNumber/swap-seat", async (req, res) => {
     coachObject[coach] = selectedCoaches[coach];
     return coachObject;
   });
+
+  
   console.log("final-2", selectedCoachesArray);
   try {
+    
     // Step 1: Find the travel model based on the PNR number
     let travelModel = await Travel.findOne({ pnrNo: pnrdata });
 
@@ -174,6 +178,31 @@ router.post("/:pnrNumber/swap-seat", async (req, res) => {
         .status(404)
         .json({ success: false, message: "Travel model not found" });
     }
+     
+    const preferenceList = req.body.preferenceList; // Assuming preferenceList is provided in the request body
+    travelModel.preferences = preferenceList; // Assign the preference list to travelModel
+    await travelModel.save(); // Save the updated travel model
+    
+    // saving the request 
+
+    const request=new Request({
+       name:req.body.name,
+       trainID:travelModel.trainInfo.name,
+       boardingStation:travelModel.boardingInfo.stationName,
+       destinationStation:travelModel.destinationInfo.stationName,
+       dt:travelModel.trainInfo.dt,
+       isSwap:false,
+       preferences:preferenceList,
+    })
+   
+    try{
+       await request.save();
+       console.log("Request Model update ");
+       console.log(request);
+     }
+     catch(error){
+      next(error);
+     }
 
     // Step 2: Extract train number and date from the travel model
     const { trainNo, dt } = travelModel.trainInfo;
@@ -183,9 +212,16 @@ router.post("/:pnrNumber/swap-seat", async (req, res) => {
       "trainInfo.trainNo": trainNo,
       "trainInfo.dt": dt,
     });
-    console.log(allTravels);
+
     // Step 4: Apply the final filter based on selected coach and seat numbers
-    const filteredTravels = allTravels.filter((travel) => {
+    const selectedCoachesArray = Object.keys(selectedCoaches).map((coach) => {
+      const coachObject = {};
+      coachObject[coach] = selectedCoaches[coach];
+      return coachObject;
+    });
+
+    // Filter travels for partially swap (without additional condition)
+    const partiallyFilteredTravels = allTravels.filter((travel) => {
       for (const coachObject of selectedCoachesArray) {
         const coach = Object.keys(coachObject)[0];
         const seats = coachObject[coach].map((seat) =>
@@ -200,37 +236,44 @@ router.post("/:pnrNumber/swap-seat", async (req, res) => {
         });
 
         if (passengers.length > 0) {
-          return true; // At least one passenger matches the selected coach and seat numbers
+          return true;
         }
       }
-      return false; // No passenger matches the selected coach and seat numbers
+      return false;
     });
-    console.log("hi i am don");
-    console.log(filteredTravels);
-    console.log(filteredTravels.length);
-    // Check if filtered travels array is empty
-    if (filteredTravels.length === 0) {
-      console.log("Nothing");
+
+    // Filter travels for perfect swap (with additional condition)
+    const perfectFilteredTravels = partiallyFilteredTravels.filter((travel) => {
+      return (
+        travel.boardingInfo.stationName === travelModel.boardingInfo.stationName &&
+        travel.destinationInfo.stationName === travelModel.destinationInfo.stationName
+      );
+    });
+
+    if (perfectFilteredTravels.length === 0) {
       return res
         .status(404)
         .json({
           success: false,
-          message: "No matching travels found",
+          message: "No perfect swapping matches found",
           travels: [],
         });
     }
 
     // Update preferences in the found travel model
-    const preferenceList = req.body.preferenceList; // Assuming preferenceList is provided in the request body
-    travelModel.preferences = preferenceList; // Assign the preference list to travelModel
-    await travelModel.save(); // Save the updated travel model
+   console.log("PArtially");
+   console.log(partiallyFilteredTravels);
+   console.log("Perferct conditon");
+   console.log(perfectFilteredTravels);
+
 
     res
       .status(200)
       .json({
         success: true,
         message: "Travel model updated successfully",
-        travels: filteredTravels,
+        partiallySwaps: partiallyFilteredTravels,
+        perfectSwaps: perfectFilteredTravels,
       });
   } catch (error) {
     console.error("Error processing swap request:", error);
@@ -239,7 +282,6 @@ router.post("/:pnrNumber/swap-seat", async (req, res) => {
       .json({ success: false, message: "Error processing swap request" });
   }
 });
-
 //For sending notifications
 // router.post("/send-notification",sendNotification);
 router.post("/swapRequestNotification",swapRequestNotification);

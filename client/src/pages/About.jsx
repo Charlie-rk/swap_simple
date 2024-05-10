@@ -1,8 +1,23 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/no-unescaped-entities */
+
+import { theme } from 'flowbite-react';
+import { ToastContainer, toast } from 'react-toastify';
+  import 'react-toastify/dist/ReactToastify.css';
 export default function About() {
+
+  const notify = () => toast.success("Wow so easy!");
   return (
+    
     <div className='min-h-screen flex items-center justify-center'>
+     
       <div className='max-w-2xl mx-auto p-3 text-center'>
+      <button onClick={notify}>Notify!</button>
+        <ToastContainer 
+         position='top-center'
+         
+         autoClose={3000}
+        />
         <div>
           <h1 className='text-3xl font font-semibold text-center my-7'>
             About Sahand' Blog
