@@ -16,6 +16,8 @@ import { swapRequestNotification, acceptSwapRequest, confirmSwapSeat } from "../
 const apiKey = "e2ad1e5765msh05ca3bdf74a69b3p1d036bjsn68c272a895fc"; // You can fetch this from environment variables if needed
 const pnrController = new PNRController(apiKey);
 
+
+
 router.get("/:pnrNumber", async (req, res) => {
   const { pnrNumber } = req.params;
   const travel=await Travel.findOne({pnrNo: pnrNumber});

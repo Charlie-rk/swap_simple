@@ -31,7 +31,10 @@ export default function Projects() {
    };
 
    return (
-      <div className='mt-10 mb-80'>
+      <div className='table- mt-10 p-20  min-h-screen overflow-x-scroll scrollbar  scrollbar-track-slate-100 scrollbar-thumb-slate-500 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500 '>
+         <div>
+
+        
          <Modal dismissible show={openModal} onClose={() => setOpenModal(false)}>
             <Modal.Header>Preferences</Modal.Header>
             <Modal.Body>
@@ -60,8 +63,8 @@ export default function Projects() {
                <Button onClick={() => setOpenModal(false)}>Close</Button>
             </Modal.Footer>
          </Modal>
-         <div className='flex flex-wrap gap-4 py-3 mx-auto justify-center'>
-            <Table hoverable>
+         <div className=' sm:flex flex-wrap gap-4 py-3  justify-center'>
+            <Table hoverable >
                <Table.Head>
                   <Table.HeadCell>User</Table.HeadCell>
                   <Table.HeadCell>Train Name</Table.HeadCell>
@@ -87,6 +90,7 @@ export default function Projects() {
                   ))}
                </Table.Body>
             </Table>
+         </div>
          </div>
       </div>
    );

@@ -66,31 +66,31 @@ export default function Home() {
 
   return (
     <>
-    <div>
+    <div className="overflow-x-hidden">
    
-      <div className="grid gap-0">
-        <div>
+      <div className=" ">
+      
           
-          <img src="railway (1).png" alt="" />
-          <img src="railway (2).png" alt="" />
-        </div>
-        <div className="h-[400px] bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1515165562839-978bbcf18277?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)'}}>
-          <div className="flex flex-col gap-5 justify-center items-center h-full bg-gray-900 bg-opacity-55">
-            <div className="p-2  bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg text-white">
-              <div className="flex flex-col items-center">
-                <Label value="Your PnrInput" className="text-lg mb-2 mx-auto w-[500px] text-center  text-y " />
-                <div className="relative">
-                  <TextInput
-                    type="text"
-                    placeholder="pnr input..."
-                    id="pnr"
-                    name="pnr"
-                    className=" border-gray-300 rounded-md px-4 py-2 w-[500px] h-16 text-center mt-2 focus:outline-none"
-                    onChange={handleChange}
-                    value={pnr}
-                  />
-                </div>
-              </div>
+          {/* <img src="railway (1).png" alt="" /> */}
+          {/* <img src="railway (2).png" alt="" /> */}
+      
+        <div className="h-[400px] w-auto bg-cover bg-center" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1515165562839-978bbcf18277?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)'}}>
+          <div className=" flex flex-col gap-5  justify-center items-center h-full bg-gray-900 bg-opacity-55">
+            <div className="p-2  md:w-auto bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg text-white">
+            <div className="flex flex-col items-center">
+  <Label value="Your PnrInput" className="text-lg mb-2 mx-auto w-full md:w-[500px] text-center" />
+  <div className="relative w-full md:w-[500px]">
+    <TextInput
+      type="text"
+      placeholder="pnr input..."
+      id="pnr"
+      name="pnr"
+      className="border-gray-300 rounded-md px-4 py-2 w-full h-16 text-center mt-2 focus:outline-none"
+      onChange={handleChange}
+      value={pnr}
+    />
+  </div>
+</div>
             </div>
             <Button  
   gradientDuoTone="purpleToPink"
@@ -116,7 +116,10 @@ export default function Home() {
           </div>
         }
       </div>
-      <div className="min-h-screen mt-56">
+      <div>
+        
+      </div>
+      <div className="min-h-screen mt-56 w-full ">
       <div
   data-aos="fade-right"
   className={`mx-4 md:mx-10 my-3 p-14 shadow-lg rounded-lg text-black dark:text-white ${

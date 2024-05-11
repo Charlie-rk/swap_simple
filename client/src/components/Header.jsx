@@ -8,6 +8,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { toggleTheme } from '../redux/theme/themeSlice';
 import { signoutSuccess } from '../redux/user/userSlice';
 import { useEffect, useState } from 'react';
+import { MdOutlineHelp } from 'react-icons/md';
 
 
 
@@ -19,6 +20,7 @@ export default function Header() {
   const { currentUser } = useSelector((state) => state.user);
   const { theme } = useSelector((state) => state.theme);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isNavbarCollapsed, setIsNavbarCollapsed] = useState(false);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
@@ -55,7 +57,8 @@ export default function Header() {
 
   return (
     <div className='py-7'>
-    <Navbar className='border-b-2 h-24 mb-1 mt-[-30px] fixed w-full z-20 top-0 start-0'>
+    <Navbar className='border-b-2 h-24 mb-1 mt-[-30px] fixed w-full z-20 top-0 start-0' 
+ >
       <Link
         to='/'
         className='self-center whitespace-nowrap text-sm sm:text-xl font-semibold dark:text-white'
@@ -81,20 +84,13 @@ export default function Header() {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </form> */}
-      <Button className='w-12 h-10 lg:hidden' color='gray' pill>
+      {/* <Button className='w-12 h-10 lg:hidden' color='gray' pill>
         <AiOutlineSearch />
       </Button>
-        
+         */}
     
       <div className='flex gap-2 md:order-2'>
-        <Button
-          className='w-12 h-10 hidden sm:inline'
-          color='gray'
-          pill
-          onClick={() => dispatch(toggleTheme())}
-        >
-          {theme === 'light' ? <FaSun /> : <FaMoon />}
-        </Button>
+      
         {currentUser ? (
           <Dropdown
             arrowIcon={false}
@@ -124,7 +120,8 @@ export default function Header() {
         )}
         <Navbar.Toggle />
       </div>
-      <Navbar.Collapse>
+      <Navbar.Collapse className='bg-white md:bg-inherit mt-8 mb-4'>
+        
         <Navbar.Link active={path === '/'} as={'div'}>
           <Link to='/'>Home</Link>
         </Navbar.Link>
@@ -134,6 +131,21 @@ export default function Header() {
         <Navbar.Link active={path === '/request'} as={'div'}>
           <Link to='/request'>All request</Link>
         </Navbar.Link>
+        <Navbar.Link active={path === '/help'} as={'div'} className='md:mr-6'>
+          <Link to='/help' className='flex'> <MdOutlineHelp className='mt-[6px] mr-1'/>  Help</Link>
+        </Navbar.Link>
+         <div className='md:mt-[-20px]'>
+       <Navbar.Link>
+        <Button
+          className='w-12 h-10  mx-8 '
+          color='gray'
+          pill
+          onClick={() => dispatch(toggleTheme())}
+        >
+          {theme === 'light' ? <FaSun /> : <FaMoon />}
+        </Button>
+        </Navbar.Link>
+        </div>
       </Navbar.Collapse>
     </Navbar>
     </div>

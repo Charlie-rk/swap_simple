@@ -13,14 +13,17 @@ import SeatSelectionForm from './components/SeatSelectionForm';
 import SwapResults from './pages/Swapresults';
 import BackToTop from './components/BackToTop';
 import PrivateRoute from './components/PrivateRoute';
+import ScrollToTop from './components/SrollToTop';
 
 import NotificationPage from './pages/NotificationPage';
+import Help from './pages/Help';
 export default function App() {
   return (
     // <div>
     //   App
     // </div>
     <BrowserRouter>
+    <ScrollToTop/>
     <Header/>
     <BackToTop/>
     <Routes>  
@@ -28,6 +31,7 @@ export default function App() {
         
          <Route path='/test' element={<NotificationPage/>}/>
          <Route path='/about' element={<About/>} />
+         <Route path='/help' element={<Help/>} />
          <Route path='/sign-in' element={<SignIn/>} />
          <Route path='/sign-up' element={<SignUp/>} />
       
