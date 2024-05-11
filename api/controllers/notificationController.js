@@ -44,17 +44,17 @@ export const getAllNotifications = async (req, res) => {
   }
 };
 
-export const getAllNotificat = async (req, res) => {
-  try {
-    // Extract userId from the request
-    // const userId = req.userId;
-    const userId = req.body.userId;
-    console.log(userId);
-    console.log("Received request for fetching notifications");
 
-    // Check if userId is provided
-    if (!userId) {
-      return res.status(400).json({ error: 'User ID is required' });
+export const markNotificationAsSeen = async (req, res) => {
+  try {
+    // Extract the userId and notificationId from the request parameters
+    const { userId, notificationId } = req.params;
+    console.log("userId", userId);
+    console.log("notificationId", notificationId);
+
+    // Check if userId and notificationId are provided
+    if (!userId || !notificationId) {
+      return res.status(400).json({ error: 'User ID and Notification ID are required' });
     }
 
     // Find the user by userId
@@ -65,22 +65,57 @@ export const getAllNotificat = async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Check if user has notifications
-    if (!user.notifications || user.notifications.length === 0) {
-      return res.status(404).json({ error: 'No notifications found for this user' });
+    // Find the notification in the user's notifications array
+    const notification = user.notifications.find(n => n._id.toString() === notificationId);
+
+    // Check if notification exists
+    if (!notification) {
+      return res.status(404).json({ error: 'Notification not found' });
     }
 
-    // Sort notifications by createdAt in descending order (-1)
-    const sortedNotifications = user.notifications.sort((a, b) => b.createdAt - a.createdAt);
+    // Update the 'seen' property of the notification to true
+    notification.seen = true;
 
-    // Send the sorted notifications
-    res.status(200).json({ notifications: sortedNotifications });
+    // Save the changes to the user object
+    await user.save();
+
+    // Send a success response
+    res.status(200).json({ message: 'Notification marked as seen successfully' });
   } catch (error) {
-    console.log('Error fetching notifications:', error);
+    console.error('Error marking notification as seen:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
 
+export const deactivateNotification = async (req, res) => {
+  try {
+    const { userId, notificationId } = req.params;
+    console.log(userId);
+    console.log(notificationId);
+    if (!userId || !notificationId) {
+      return res.status(400).json({ error: 'User ID and Notification ID are required' });
+    }
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    // const notification = user.notifications.find(n => n._id.toString() === notificationId);
+    const notification = user.notifications.find(n => n._id.toString() === notificationId);
+    if (!notification) {
+      return res.status(404).json({ error: 'Notification not found' });
+    }
+
+    notification.active = false;
+    await user.save();
+    res.status(200).json({ message: 'Notification deactivated successfully' });
+
+
+  } catch (error) {
+    console.log('Error deactivating notification', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
 
 const transporter = nodemailer.createTransport({
   service: "gmail",

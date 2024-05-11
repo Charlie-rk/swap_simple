@@ -31,6 +31,7 @@ const userSchema = new mongoose.Schema({
       },
       subject: {
         type: String,
+        default: "Notification"
         // required: true,
       },
       takeResponse: {

@@ -40,6 +40,7 @@ const NotificationPage = () => {
             {notifications.map(notification => (
                 <NotificationCard
                     key={notification._id}
+                    notificationId={notification._id}
                     message={notification.message}
                     subject={notification.subject}
                     takeResponse={notification.takeResponse}

@@ -7,7 +7,7 @@ import { applyForSwap } from "../controllers/travelController.js";
 import Travel from "../models/travelModel.js";
 import User from "../models/userModel.js";
 import Request from "../models/requestModel.js";
-import { swapRequestNotification, acceptSwapRequest, confirmSwapSeat, getAllNotifications } from "../controllers/notificationController.js";
+import { swapRequestNotification, acceptSwapRequest, confirmSwapSeat, getAllNotifications, markNotificationAsSeen, deactivateNotification } from "../controllers/notificationController.js";
 // Create an instance of PNRController
 //sangamkr.mishra
 //const apiKey = "faa6bac541mshee4e9bf88a81448p12c76ajsnc853689715d2"; // You can fetch this from environment variables if needed
@@ -18,7 +18,8 @@ const pnrController = new PNRController(apiKey);
 
 // router.get("/getAllNotifications/:userId", getAllNotifications);
 router.get("/getAllNotifications/:userId", getAllNotifications);
-
+router.patch("/markNotificationAsSeen/:userId/:notificationId", markNotificationAsSeen);
+router.patch("/deactivateNotification/:userId/:notificationId", deactivateNotification);
 router.post("/swapRequestNotification",swapRequestNotification);
 router.post("/acceptSwap", acceptSwapRequest);
 router.post("/confirmSwap", confirmSwapSeat);
