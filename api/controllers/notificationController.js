@@ -1,3 +1,4 @@
+//It is new one
 import mongoose from "mongoose";
 import moment from "moment";
 import User from "../models/userModel.js";
@@ -6,6 +7,80 @@ import Swap from "../models/swapModel.js";
 import Travel from "../models/travelModel.js";
 
 import 'dotenv/config';
+
+export const getAllNotifications = async (req, res) => {
+  try {
+    // Extract userId from the request parameters
+    const { userId } = req.params;
+
+    // Check if userId is provided
+    if (!userId) {
+      return res.status(400).json({ error: 'User ID is required' });
+    }
+
+    console.log(`Received request for fetching notifications for user ${userId}`);
+
+    // Find the user by userId
+    const user = await User.findById(userId);
+
+    // Check if user exists
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Check if user has notifications
+    if (!user.notifications || user.notifications.length === 0) {
+      return res.status(404).json({ error: 'No notifications found for this user' });
+    }
+
+    // Sort notifications by createdAt in descending order (-1)
+    const sortedNotifications = user.notifications.sort((a, b) => b.createdAt - a.createdAt);
+
+    // Send the sorted notifications
+    res.status(200).json({ notifications: sortedNotifications });
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const getAllNotificat = async (req, res) => {
+  try {
+    // Extract userId from the request
+    // const userId = req.userId;
+    const userId = req.body.userId;
+    console.log(userId);
+    console.log("Received request for fetching notifications");
+
+    // Check if userId is provided
+    if (!userId) {
+      return res.status(400).json({ error: 'User ID is required' });
+    }
+
+    // Find the user by userId
+    const user = await User.findById(userId);
+
+    // Check if user exists
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Check if user has notifications
+    if (!user.notifications || user.notifications.length === 0) {
+      return res.status(404).json({ error: 'No notifications found for this user' });
+    }
+
+    // Sort notifications by createdAt in descending order (-1)
+    const sortedNotifications = user.notifications.sort((a, b) => b.createdAt - a.createdAt);
+
+    // Send the sorted notifications
+    res.status(200).json({ notifications: sortedNotifications });
+  } catch (error) {
+    console.log('Error fetching notifications:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -27,7 +102,8 @@ const sendMail = async (mailOptions) => {
     // Logging and returning instead of throwing error
   }
 };
-export const sendNotification = async ({ userId1, userId2, message1, message2, travelId1, travelId2 }) => {
+
+export const sendNotification = async ({ userId1, userId2, message1, message2, subject1, subject2, takeResponse1, takeResponse2, travelId1, travelId2 }) => {
   try {
     const user1 = await User.findById(userId1);
     const user2 = await User.findById(userId2);
@@ -37,15 +113,15 @@ export const sendNotification = async ({ userId1, userId2, message1, message2, t
       return;
     }
 
-    user1.notifications.push({ message: `${message1} (Travel ID: ${travelId1})` });
-    user2.notifications.push({ message: `${message2} (Travel ID: ${travelId2})` });
+    user1.notifications.push({ message: `${message1}`, subject: `${subject1}`, takeResponse: takeResponse1, ownTravelId: `${travelId1}`, otherTravelId: `${travelId2}` });
+    user2.notifications.push({ message: `${message2}`, subject: `${subject2}`, takeResponse: takeResponse2, ownTravelId: `${travelId2}`, otherTravelId: `${travelId1}` });
 
     await user1.save();
     await user2.save();
 
     const emailOptions = {
       from: {
-        name: "Your Name",
+        name: "sangam kumar mishra",
         address: process.env.USER,
       },
       to: [user1.email, user2.email],
@@ -78,11 +154,18 @@ export const swapRequestNotification = async (req, res) => {
     const messageToAccepter = `Someone with ${PresentSeat} is requesting to swap seats with you`;
     const messageToRequester = `You have successfully made a request to swap seats with seat ${WantedSeat}`;
 
+    const subjectforRequester = "RequestSeatSwap";
+    const subjectforAccepter = "AcceptSeatSwap";
+
     await sendNotification({
       userId1: requesterId,
       userId2: accepterId,
       message1: messageToRequester,
       message2: messageToAccepter,
+      subject1: subjectforRequester,
+      subject2: subjectforAccepter,
+      takeResponse1: false,
+      takeResponse2: true,
       travelId1: requesterTravelId,
       travelId2: accepterTravelId
     });
@@ -100,6 +183,8 @@ export const acceptSwapRequest = async (req, res) => {
   const { travelId1, travelId2 } = req.body;
 
   try {
+
+    console.log("I am inside acceptSwapRequest");
     const travel1 = await Travel.findById(travelId1);
     const travel2 = await Travel.findById(travelId2);
 
@@ -116,6 +201,9 @@ export const acceptSwapRequest = async (req, res) => {
     const message1 = `You can confirm your swaps. You may communicate with your swapping partners through ${user2.name} (${user2.email}, ${user2.phone}).`;
     const message2 = `You can confirm your swaps. You may communicate with your swapping partners through ${user1.name} (${user1.email}, ${user1.phone}).`;
 
+    const subject1 = "ConfirmYourSwap";
+    const subject2 = "ConfirmYourSwap";
+
     const newSwap = new Swap({
       user1: userId1,
       user2: userId2,
@@ -130,6 +218,10 @@ export const acceptSwapRequest = async (req, res) => {
       userId2: userId2,
       message1: message1,
       message2: message2,
+      subject1: subject1,
+      subject2: subject2,
+      takeResponse1: true,
+      takeResponse2: true,
       travelId1: travel1._id,
       travelId2: travel2._id
     });
@@ -143,45 +235,50 @@ export const acceptSwapRequest = async (req, res) => {
   }
 };
 
-export const confirmSwapSeat = async (req, res) => {
-  const { userId, travelId } = req.body;
 
+export const confirmSwapSeat = async (req, res) => {
+  const { userId, ownTravelId, otherTravelId } = req.body;
   try {
     const swap = await Swap.findOne({
-      $or: [{ travel1: travelId, user2: userId }, { travel2: travelId, user1: userId }]
+      $or: [{ user1: userId, travel1: ownTravelId, travel2: otherTravelId }, { user2: userId, travel1: otherTravelId, travel2: ownTravelId }]
     });
 
     if (!swap) {
       return res.status(404).json({ message: "Swap not found or not confirmed" });
     }
 
+    // if(swap.travel1.equals(ownTravelId))
     if (swap.user1.equals(userId)) {
       swap.isConfirmedByUser1 = true;
-    } else if (swap.travel1.equals(travelId)) {
+    }
+    else if (swap.user2.equals(userId)) {
       swap.isConfirmedByUser2 = true;
     }
-    
     await swap.save();
 
     if (!(swap.isConfirmedByUser1 && swap.isConfirmedByUser2)) {
       return res.status(400).json({ message: "Swap not confirmed by both users" });
     }
-
-    const travel1 = await Travel.findByIdAndDelete(swap.travel1);
-    const travel2 = await Travel.findByIdAndDelete(swap.travel2);
-
+    const travel1 = await Travel.findByIdAndDelete(ownTravelId);
+    const travel2 = await Travel.findByIdAndDelete(otherTravelId);
     if (!travel1 || !travel2) {
       return res.status(404).json({ message: "Travel documents not found" });
-    }
 
+    }
     const user1Message = `Your seat (${travel1.seatInfo.coach}-${travel1.seatInfo.berth}) is confirmed with ${travel2.user.name}'s seat (${travel2.seatInfo.coach}-${travel2.seatInfo.berth}).`;
     const user2Message = `Your seat (${travel2.seatInfo.coach}-${travel2.seatInfo.berth}) is confirmed with ${travel1.user.name}'s seat (${travel1.seatInfo.coach}-${travel1.seatInfo.berth}).`;
 
+    const subject1 = "SeatSwapConfirmed";
+    const subject2 = "SeatSwapConfirmed";
     await sendNotification({
       userId1: travel1.user._id,
       userId2: travel2.user._id,
       message1: user1Message,
       message2: user2Message,
+      subject1: subject1,
+      subject2: subject2,
+      takeResponse1: false,
+      takeResponse2: false,
       travelId1: travel1._id,
       travelId2: travel2._id
     });
@@ -189,8 +286,9 @@ export const confirmSwapSeat = async (req, res) => {
     return res.status(200).json({
       message: "Travel schemas deleted successfully and notifications sent",
     });
+
   } catch (error) {
     console.error("Error confirming swap seat", error);
     return res.status(500).json({ error: "Internal server error" });
   }
-};
+}

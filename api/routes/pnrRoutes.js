@@ -7,7 +7,7 @@ import { applyForSwap } from "../controllers/travelController.js";
 import Travel from "../models/travelModel.js";
 import User from "../models/userModel.js";
 import Request from "../models/requestModel.js";
-import { swapRequestNotification, acceptSwapRequest, confirmSwapSeat } from "../controllers/notificationController.js";
+import { swapRequestNotification, acceptSwapRequest, confirmSwapSeat, getAllNotifications } from "../controllers/notificationController.js";
 // Create an instance of PNRController
 //sangamkr.mishra
 //const apiKey = "faa6bac541mshee4e9bf88a81448p12c76ajsnc853689715d2"; // You can fetch this from environment variables if needed
@@ -15,6 +15,14 @@ import { swapRequestNotification, acceptSwapRequest, confirmSwapSeat } from "../
 //ssangamkr.mishra
 const apiKey = "e2ad1e5765msh05ca3bdf74a69b3p1d036bjsn68c272a895fc"; // You can fetch this from environment variables if needed
 const pnrController = new PNRController(apiKey);
+
+// router.get("/getAllNotifications/:userId", getAllNotifications);
+router.get("/getAllNotifications/:userId", getAllNotifications);
+
+router.post("/swapRequestNotification",swapRequestNotification);
+router.post("/acceptSwap", acceptSwapRequest);
+router.post("/confirmSwap", confirmSwapSeat);
+
 
 router.get("/:pnrNumber", async (req, res) => {
   const { pnrNumber } = req.params;
@@ -284,8 +292,6 @@ router.post("/:pnrNumber/swap-seat", async (req, res,next) => {
 });
 //For sending notifications
 // router.post("/send-notification",sendNotification);
-router.post("/swapRequestNotification",swapRequestNotification);
-router.post("/acceptSwap", acceptSwapRequest);
-router.post("/confirmSwap", confirmSwapSeat);
+
 
 export default router;
