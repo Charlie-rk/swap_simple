@@ -15,7 +15,7 @@ const SwapResults = () => {
   console.log({ pnrNumber });
   console.log("hii");
   const location = useLocation();
-
+  
   useEffect(() => {
     SetMatchType("Perfect");
     const { result2 } = location.state;

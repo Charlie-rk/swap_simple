@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content'
 import { useSelector } from "react-redux";
-
+import { useNavigate } from "react-router-dom";
 const CardList = ({ travel,pnr }) => {
  // const data=useSelector((state))
   const { travel__Id } = useSelector((state) => state.user);
@@ -19,6 +19,7 @@ const CardList = ({ travel,pnr }) => {
   console.log({pnr});
   const travelId=travel._id;
   console.log(travelId);
+  const navigate = useNavigate();
   const MySwal = withReactContent(Swal);
   const handleSwap = () => {
     //   console.log("Hiia ams ");
@@ -55,10 +56,42 @@ const CardList = ({ travel,pnr }) => {
   
         const data = await res.json();
         console.log(data);
+        if(data.success==='true'){
+          MySwal.fire({
+            title: "Swap - Simple",
+            html: `
+              <div style="text-align: center;">
+                <p style="font-size: 18px; font-weight: bold; color: green;">Your request has been <span style="color: green;">successfully</span> sent!</p>
+                <p style="font-size: 16px;">Please check your <span style="color: red;">email</span> for further updates or visit the <span style="color: red;">Notification</span> section.</p>
+              </div>
+            `,
+            icon: "success"
+          });
+        }
+        else{
+          MySwal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Something went wrong!",
+          });
+        }
+        navigate("/notification");
   
       } else if (result.isDenied) {
         // Handle deny action
         console.log("hi--2");
+        MySwal.fire({
+          title: "Swap - Simple",
+          html: `
+            <div style="text-align: center;">
+            <p style="font-size: 18px; font-weight: bold; color: green;">Your request has been <span style="color: green;">successfully</span> pulled in the All Requests section!</p>
+
+              <p style="font-size: 16px;">Please check your <span style="color: red;">email</span> for further updates or visit the <span style="color: red;">Notification</span> section.</p>
+            </div>
+          `,
+          icon: "success"
+        });
+        navigate("/request");
         // go for pull request 
       } else {
         // Handle cancel action

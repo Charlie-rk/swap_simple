@@ -83,7 +83,7 @@ export function NotificationCard(props) {
   };
 
   const handleSuccess = async () => {
-    try {
+    try { 
       console.log("I am inside handleSuccess");
       if (props.subject === "AcceptSeatSwap") {
         const res = await fetch("/api/pnr/acceptSwap", {
@@ -155,7 +155,7 @@ export function NotificationCard(props) {
           </div>
           <br />
           <div className="flex mt-3 flex-col sm:flex-row shrink-0 items-center">
-            <div>
+            <div className="w-full mt-2 sm:mt-0">
               <a
                 href="#"
                 className="mr-3 inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-900 hover:bg-gray-100 hover:text-cyan-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
@@ -170,16 +170,18 @@ export function NotificationCard(props) {
                 )}
                 {/* {showFullMessage?'Show less' : 'Show more'} */}
               </a>
+              </div>
+              <div className="sm:mr-2 mt-2 sm:mt-0">
               <a
                 href="#"
-                className="mr-2 inline-flex items-center justify-center rounded-lg bg-cyan-700 px-3 py-2 text-xs font-medium text-white hover:bg-cyan-800 focus:outline-none focus:ring-4 focus:ring-cyan-300 dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-cyan-800"
+                className=" w-full mr-2 inline-flex flex-row items-center justify-center rounded-lg bg-cyan-700 px-3 py-2 text-xs font-medium text-white hover:bg-cyan-800 focus:outline-none focus:ring-4 focus:ring-cyan-300 dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-cyan-800"
               >
                 Get started
                 <HiArrowRight className="ml-2 h-4 w-4" />
               </a>
             </div>
 
-            <div className="">
+            <div className="w-full sm:mr-2 mt-2 sm:mt-0">
               {/* <Button pill>Default</Button>
       <Button color="blue" pill>
         Blue
@@ -195,8 +197,9 @@ export function NotificationCard(props) {
       </Button> */}
               {/* {!props.takeResponse && !props.active && ( */}
               <Button
+                className="w-full rounded-lg"
                 color="success"
-                pill
+                 outline
                 onClick={() => {
                   handleSuccess();
                   markNotificationAsSeen();
@@ -207,10 +210,11 @@ export function NotificationCard(props) {
                 Success({props.subject})
               </Button>{" "}
             </div>
-            <div>
+            <div className={`w-full sm:mr-2 mt-2 sm:mt-0 ${!props.takeResponse ? "hidden" : ""}`}> 
               <Button
+                 className="w-full rounded-lg"
                 color="failure"
-                pill
+                 outline
                 onClick={() => {
                   handleFailure();
                   markNotificationAsSeen();

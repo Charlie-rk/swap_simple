@@ -223,7 +223,7 @@ router.post("/:pnrNumber/swap-seat", async (req, res,next) => {
     const allTravels = await Travel.find({
       "trainInfo.trainNo": trainNo,
       "trainInfo.dt": dt,
-      pnrNo: { $ne: pnrdata } // Exclude the travel with the provided PNR number
+      //pnrNo: { $ne: pnrdata } // Exclude the travel with the provided PNR number
     });
     // Step 4: Apply the final filter based on selected coach and seat numbers
     const selectedCoachesArray = Object.keys(selectedCoaches).map((coach) => {

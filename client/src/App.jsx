@@ -29,7 +29,7 @@ export default function App() {
     <Routes>  
          <Route path='/' element={<Home/>} />
         
-         <Route path='/test' element={<NotificationPage/>}/>
+         <Route path='/notification' element={<NotificationPage/>}/>
          <Route path='/about' element={<About/>} />
          <Route path='/help' element={<Help/>} />
          <Route path='/sign-in' element={<SignIn/>} />

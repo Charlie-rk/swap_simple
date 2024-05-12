@@ -9,7 +9,7 @@ import { toggleTheme } from '../redux/theme/themeSlice';
 import { signoutSuccess } from '../redux/user/userSlice';
 import { useEffect, useState } from 'react';
 import { MdOutlineHelp } from 'react-icons/md';
-
+import { IoNotificationsCircleSharp } from "react-icons/io5";
 
 
 export default function Header() {
@@ -131,8 +131,11 @@ export default function Header() {
         <Navbar.Link active={path === '/request'} as={'div'}>
           <Link to='/request'>All request</Link>
         </Navbar.Link>
-        <Navbar.Link active={path === '/help'} as={'div'} className='md:mr-6'>
-          <Link to='/help' className='flex'> <MdOutlineHelp className='mt-[6px] mr-1'/>  Help</Link>
+        <Navbar.Link active={path === '/help'} as={'div'} className='md:mr-2'>
+          <Link to='/help' className='flex'> <MdOutlineHelp className=' text-3xl'/>  Help</Link>
+        </Navbar.Link>
+        <Navbar.Link active={path === '/notification'} as={'div'} className='md:mr-6'>
+          <Link to='/notification' className='flex'> <IoNotificationsCircleSharp className='mt-[px] mr-1 text-3xl'/>  Notification</Link>
         </Navbar.Link>
          <div className='md:mt-[-20px]'>
        <Navbar.Link>

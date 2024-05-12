@@ -126,8 +126,9 @@ const transporter = nodemailer.createTransport({
   port: 587,
   secure: false,
   auth: {
-    user: process.env.USER,
-    pass: process.env.PASSWORD,
+    user:"rustampavri1275@gmail.com",
+    //"djyh phga iwhf nkyr"
+    pass:"djyh phga iwhf nkyr",
   },
 });
 
@@ -158,19 +159,140 @@ export const sendNotification = async ({ user1, user2, message1, message2, subje
 
     await user1.save();
     await user2.save();
-
-    const emailOptions = {
+    console.log(user1.email);
+    console.log(user2.email);
+    const emailOptions1= {
       from: {
-        name: "sangam kumar mishra",
-        address: process.env.USER,
+        name: "Rustam Kumar",
+        address: "rustampavri1275@gmail.com",
       },
-      to: [user1.email, user2.email],
-      subject: "You have some new notifications",
-      text: "You have some new notifications.",
+      to: user1.email,
+      subject: "Swap-simple notifications",
+      text: "Swap-simple",
+      html: `
+      <html>
+      <head>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+          }
+          .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+          }
+          h1 {
+            color: #333;
+            text-align: center;
+          }
+          .body-section {
+            margin-top: 20px;
+          }
+          p {
+            color: #666;
+            line-height: 1.6;
+          }
+          .thank-you {
+            margin-top: 20px;
+            text-align: center;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>Swap your Seat</h1>
+          <div class="body-section">
+            <p>🤗 Your request to swap your seat has been successfully made 📤 to  <b>${user2.username}</b>'s 😊</p>
+            <hr />
+            <p>Please wait for  <b>${user2.username}</b>'s  confirmation of the swap.</p>
+            <p>Thank you for your patience.</p>
+            <hr/>
+            <p>For more details, please visit the <b>Notification</b>Notification section of our site.</p>
+          </div>
+          
+          <div class="thank-you">
+            <p>❤️ Thank you for using our service! ❤️</p>
+            <p> Rustam & Sangam</p>
+          </div>
+        </div>
+      </body>
+    </html>
+     `,
       cc: ["sangamkr.mishra@gmail.com"], // Corrected cc field to be an array
     };
-
-    await sendMail(emailOptions);
+    const emailOptions2 = {
+      from: {
+        name: "Rustam Kumar",
+        address: "rustampavri1275@gmail.com",
+      },
+      to: user2.email,
+      subject: "Swap-simple notifications",
+      text: "Swap-simple",
+      html: `
+      <html>
+      <head>
+        <style>
+          /* Add your CSS styles here */
+          body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+          }
+          .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+          }
+          h1 {
+            color: #333;
+            text-align: center;
+          }
+          .body-section {
+            margin-top: 20px;
+          }
+          p {
+            color: #666;
+            line-height: 1.6;
+          }
+          .thank-you {
+            margin-top: 20px;
+            text-align: center;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>Swap your Seat</h1>
+          <div class="body-section">
+            <p>🤗 <b>${user1.username}</b> has requested🙏 to swap his/her seat with you. 😊</p>
+            <hr />
+            <p>Please confirm <b>${user1.username}</b>'s request if you want to swap, or deny it if you prefer not to.</p>
+            <p>Thank you for your patience.</p>
+            <hr/>
+            <p>For more details, please visit the <b>Notification</b> section of our site.</p>
+          </div>
+           
+          <div class="thank-you">
+            <p>❤️ Thank you for using our service! ❤️</p>
+            <p> Rustam & Sangam</p>
+          </div>
+        </div>
+      </body>
+    </html>
+    
+     `,
+      cc: ["sangamkr.mishra@gmail.com"], // Corrected cc field to be an array
+    };
+    await sendMail(emailOptions1);
+    await sendMail(emailOptions2);
 
     console.log("Notifications sent successfully");
   } catch (error) {
@@ -222,7 +344,7 @@ export const swapRequestNotification = async (req, res) => {
     console.log("Notify him succeed");
     return res
       .status(200)
-      .json({ message: "Swap request notification sent successfully" });
+      .json({ message: "Swap request notification sent successfully" ,success:"true"});
   } catch (error) {
     console.error("Error sending swap request notification", error);
     return res.status(500).json({ error: "Internal server error" });
