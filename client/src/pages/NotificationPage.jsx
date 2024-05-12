@@ -37,6 +37,8 @@ const NotificationPage = () => {
 
     return (
         <>
+        <div className="mt-8 min-h-screen px-2 md:px-40 overflow-x-hidden ">
+            
             {/* Mapping over notifications and rendering NotificationCard component */}
             {notifications.map(notification => (
                 <NotificationCard
@@ -52,6 +54,7 @@ const NotificationPage = () => {
                     otherTravelId={notification.otherTravelId}
                 />
             ))}
+            </div>
         </>
     );
 }
