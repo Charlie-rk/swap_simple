@@ -8,7 +8,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { useSelector } from 'react-redux';
-
+import { useDispatch } from 'react-redux';
+import { setTravelID } from "../redux/user/userSlice";
 
 export default function Home() {
  // const pnrSection=useRef();
@@ -19,7 +20,8 @@ export default function Home() {
   const [travel, setTravel] = useState({});
   const [loading, setLoading] = useState(false);
   const pnrCardRef = useRef(); // Create a ref for the PnrCard section
-
+  
+  const dispatch=useDispatch();
   const handleChange = (e) => {
     setPnr(e.target.value);
   }
@@ -39,9 +41,9 @@ export default function Home() {
     e.preventDefault();
     try {
       setSuccess(false);
-      const res = await fetch(`/api/pnr/${pnr}`, {
+      const res = await fetch(`/api/pnr/${pnr}?user=${encodeURIComponent(JSON.stringify(currentUser))}`, {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' }
       });
       
       if (res.ok) {
@@ -49,9 +51,9 @@ export default function Home() {
         setSuccess(true);
         setLoading(false);
         setTravel(data.travel);
-
+        console.log(data.travel._id);
         // Scroll to the section where PnrCard is displayed
-
+        dispatch(setTravelID({ travel__Id: data.travel._id }));
         scrollUp();
        
       } else {

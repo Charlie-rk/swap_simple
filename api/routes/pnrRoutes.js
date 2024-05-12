@@ -16,34 +16,32 @@ import { swapRequestNotification, acceptSwapRequest, confirmSwapSeat, getAllNoti
 const apiKey = "e2ad1e5765msh05ca3bdf74a69b3p1d036bjsn68c272a895fc"; // You can fetch this from environment variables if needed
 const pnrController = new PNRController(apiKey);
 
-<<<<<<< HEAD
-=======
-// router.get("/getAllNotifications/:userId", getAllNotifications);
+//router.get("/getAllNotifications/:userId", getAllNotifications);
 router.get("/getAllNotifications/:userId", getAllNotifications);
 router.patch("/markNotificationAsSeen/:userId/:notificationId", markNotificationAsSeen);
 router.patch("/deactivateNotification/:userId/:notificationId", deactivateNotification);
 router.post("/swapRequestNotification",swapRequestNotification);
 router.post("/acceptSwap", acceptSwapRequest);
 router.post("/confirmSwap", confirmSwapSeat);
->>>>>>> f7678eaa8dc4eedee7396f3c9e916783aefd0282
 
 
 router.get("/:pnrNumber", async (req, res) => {
+  console.log("GET DETAILS OF PNR ::")
   const { pnrNumber } = req.params;
-  const travel=await Travel.findOne({pnrNo: pnrNumber});
-  if(travel){
-    console.log(travel);
-  return res.status(201).json({ success: true, message: "Succesful", travel });
-  }
+  const { user } = req.query; // Extract user from URL parameters
+   console.log(user);
+  // const travel = await Travel.findOne({ pnrNo: pnrNumber });
+  // if (travel) {
+  //   console.log(travel);
+  //   return res.status(201).json({ success: true, message: "Succesful", travel });
+  // }
 
   console.log("---", pnrNumber);
-  // console.log(req.body);
 
   try {
     console.log("hii");
     const pnrStatus = await pnrController.getPNRStatus(pnrNumber);
-    //res.json(pnrStatus);
- console.log(pnrStatus);
+    console.log(pnrStatus);
     console.log("byee");
     const passengers = pnrStatus.data.passengerInfo.map((passenger) => ({
       currentCoach: passenger.currentCoach,
@@ -53,7 +51,7 @@ router.get("/:pnrNumber", async (req, res) => {
 
     const travel = new Travel({
       pnrNo: pnrNumber,
-      // user:user,
+      user: JSON.parse(user),
       boardingInfo: {
         trainId: pnrStatus.data.boardingInfo.trainId,
         stationId: pnrStatus.data.boardingInfo.stationId,
@@ -86,7 +84,9 @@ router.get("/:pnrNumber", async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
   }
-});// Route for getting PNR status
+});
+
+// Route for getting PNR status
 
 // router.post("/:pnr/swap/request",async(req,res)=>{
 //   const {pnr}=req.params;// swaper
@@ -219,12 +219,12 @@ router.post("/:pnrNumber/swap-seat", async (req, res,next) => {
     // Step 2: Extract train number and date from the travel model
     const { trainNo, dt } = travelModel.trainInfo;
 
-    // Step 3: Find all travels matching the train number and date
+    // all travel 
     const allTravels = await Travel.find({
       "trainInfo.trainNo": trainNo,
       "trainInfo.dt": dt,
+      pnrNo: { $ne: pnrdata } // Exclude the travel with the provided PNR number
     });
-
     // Step 4: Apply the final filter based on selected coach and seat numbers
     const selectedCoachesArray = Object.keys(selectedCoaches).map((coach) => {
       const coachObject = {};

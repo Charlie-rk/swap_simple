@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/prop-types */
 import React, { useState } from "react";
 import { Banner, BannerCollapseButton, Button } from "flowbite-react";
 import { FaBookOpen } from "react-icons/fa";

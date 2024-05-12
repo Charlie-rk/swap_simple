@@ -9,6 +9,7 @@ import Travel from "../models/travelModel.js";
 import 'dotenv/config';
 
 export const getAllNotifications = async (req, res) => {
+  console.log("RKSAN");
   try {
     // Extract userId from the request parameters
     const { userId } = req.params;
@@ -22,7 +23,7 @@ export const getAllNotifications = async (req, res) => {
 
     // Find the user by userId
     const user = await User.findById(userId);
-
+    console.log(user);
     // Check if user exists
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -30,10 +31,12 @@ export const getAllNotifications = async (req, res) => {
 
     // Check if user has notifications
     if (!user.notifications || user.notifications.length === 0) {
+      console.log("NO notification for the user");
       return res.status(404).json({ error: 'No notifications found for this user' });
     }
 
     // Sort notifications by createdAt in descending order (-1)
+    console.log("OH notfiy him");
     const sortedNotifications = user.notifications.sort((a, b) => b.createdAt - a.createdAt);
 
     // Send the sorted notifications
@@ -138,10 +141,12 @@ const sendMail = async (mailOptions) => {
   }
 };
 
-export const sendNotification = async ({ userId1, userId2, message1, message2, subject1, subject2, takeResponse1, takeResponse2, travelId1, travelId2 }) => {
+export const sendNotification = async ({ user1, user2, message1, message2, subject1, subject2, takeResponse1, takeResponse2, travelId1, travelId2 }) => {
   try {
-    const user1 = await User.findById(userId1);
-    const user2 = await User.findById(userId2);
+    console.log(user1);
+    console.log(user2);
+    // const user1 = await User.findById(userId1);
+    // const user2 = await User.findById(userId2);
 
     if (!user1 || !user2) {
       console.error("User Not Found");
@@ -175,15 +180,25 @@ export const sendNotification = async ({ userId1, userId2, message1, message2, s
 };
 
 export const swapRequestNotification = async (req, res) => {
+  console.log("Swap request notification");
+  console.log(req.body);
+
+  //const {requesterId,accepterTravelId}=req.body;
   const { requesterTravelId, accepterTravelId } = req.body;
 
+
   try {
-    const requesterTravel = await Travel.findById(requesterTravelId);
-    const accepterTravel = await Travel.findById(accepterTravelId);
+    const requesterTravel = await Travel.findById(requesterTravelId).populate('user');
+    const accepterTravel = await Travel.findById(accepterTravelId).populate('user');
 
-    const requesterId = requesterTravel.user;
-    const accepterId = accepterTravel.user;
 
+    console.log(requesterTravel);
+    console.log(accepterTravel);
+    const requesterUser = requesterTravel.user;
+    const accepterUser = accepterTravel.user;
+
+    console.log(requesterUser);
+    console.log(accepterUser);
     const PresentSeat = requesterTravel.passengerInfo;
     const WantedSeat = accepterTravel.passengerInfo;
     const messageToAccepter = `Someone with ${PresentSeat} is requesting to swap seats with you`;
@@ -193,8 +208,8 @@ export const swapRequestNotification = async (req, res) => {
     const subjectforAccepter = "AcceptSeatSwap";
 
     await sendNotification({
-      userId1: requesterId,
-      userId2: accepterId,
+      user1: requesterUser,
+      user2: accepterUser,
       message1: messageToRequester,
       message2: messageToAccepter,
       subject1: subjectforRequester,
@@ -204,7 +219,7 @@ export const swapRequestNotification = async (req, res) => {
       travelId1: requesterTravelId,
       travelId2: accepterTravelId
     });
-
+    console.log("Notify him succeed");
     return res
       .status(200)
       .json({ message: "Swap request notification sent successfully" });

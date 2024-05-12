@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   currentUser: null,
+  travel__Id:null,
   error: null,
   loading: false,
 };
@@ -10,6 +11,9 @@ const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
+    setTravelID: (state, action) => {
+      state.travel__Id = action.payload.travel__Id;
+    },
     signInStart: (state) => {
       state.loading = true;
       state.error = null;
@@ -58,6 +62,7 @@ const userSlice = createSlice({
 });
 
 export const {
+  setTravelID,
   signInStart,
   signInSuccess,
   signInFailure,

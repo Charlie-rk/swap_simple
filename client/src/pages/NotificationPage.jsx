@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import { NotificationCard } from "../components/NotificationCard";
 import { useSelector } from "react-redux";

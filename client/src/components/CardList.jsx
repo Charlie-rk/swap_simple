@@ -7,50 +7,67 @@ import { Button, Card } from "flowbite-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content'
+import { useSelector } from "react-redux";
 
 const CardList = ({ travel,pnr }) => {
- 
+ // const data=useSelector((state))
+  const { travel__Id } = useSelector((state) => state.user);
+  const {currentUser}=useSelector((state)=>state.user);
+  console.log(currentUser);
+  console.log("Global-===");
+  console.log(travel__Id);
   console.log({pnr});
   const travelId=travel._id;
   console.log(travelId);
   const MySwal = withReactContent(Swal);
-     const handleSwap = () => {
-   //   console.log("Hiia ams ");
-      MySwal.fire({
-        title: '<p class="text-black ">Are you sure for SWAP?</p>  ',
-        icon: 'question',
-        showCancelButton: true,
-        showDenyButton: true,
-       // confirmButtonText: '<span  class="text-black" >Save As</span>',
-        confirmButtonText: '<button class="font-bold" >Request User </button>',
-        cancelButtonText: '<button class="font-bold">Cancel</button>',
-        denyButtonText: '<button class="font-bold">Pull in Queue</button>',
-        allowEscapeKey: false,
-        customClass: {
-          popup: 'my-popup',
-          actions: 'flex '
-        },
-        didOpen: (popup) => {
+  const handleSwap = () => {
+    //   console.log("Hiia ams ");
+    MySwal.fire({
+      title: '<p class="text-black ">Are you sure for SWAP?</p>  ',
+      icon: 'question',
+      showCancelButton: true,
+      showDenyButton: true,
+      // confirmButtonText: '<span  class="text-black" >Save As</span>',
+      confirmButtonText: '<button class="font-bold" >Request User </button>',
+      cancelButtonText: '<button class="font-bold">Cancel</button>',
+      denyButtonText: '<button class="font-bold">Pull in Queue</button>',
+      allowEscapeKey: false,
+      customClass: {
+        popup: 'my-popup',
+        actions: 'flex '
+      },
+      didOpen: (popup) => {
         //  console.log(popup);
-          popup.querySelector('.swal2-icon').classList.add('font-bold');
-        }
-      }).then((result) => {
-        if (result.isConfirmed) {
-          console.log("hi--1");
-        // go for email router -- 
-
-        } else if (result.isDenied) {
-          // Handle deny action
-          console.log("hi--2");
-          // go for pull request 
-        } else {
-          // Handle cancel action
-          // cancel case no action 
-          console.log("hi--3");
-        }
-      });
-    };
-    
+        popup.querySelector('.swal2-icon').classList.add('font-bold');
+      }
+    }).then(async (result) => { // Marking the function as async here
+      if (result.isConfirmed) {
+        console.log("hi--1");
+        // go for email router --
+        const res = await fetch(`/api/pnr/swapRequestNotification`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            requesterTravelId:travel__Id,
+            accepterTravelId: travelId,
+          })
+        });
+  
+        const data = await res.json();
+        console.log(data);
+  
+      } else if (result.isDenied) {
+        // Handle deny action
+        console.log("hi--2");
+        // go for pull request 
+      } else {
+        // Handle cancel action
+        // cancel case no action 
+        console.log("hi--3");
+      }
+    });
+  };
+  
     
   return (
     <Card className="max-w-sm bg-slate-100">
