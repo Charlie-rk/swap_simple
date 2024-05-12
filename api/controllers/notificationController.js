@@ -314,8 +314,8 @@ export const swapRequestNotification = async (req, res) => {
     const accepterTravel = await Travel.findById(accepterTravelId).populate('user');
 
 
-    console.log(requesterTravel);
-    console.log(accepterTravel);
+    // console.log(requesterTravel);
+    // console.log(accepterTravel);
     const requesterUser = requesterTravel.user;
     const accepterUser = accepterTravel.user;
 
@@ -357,28 +357,28 @@ export const acceptSwapRequest = async (req, res) => {
   try {
 
     console.log("I am inside acceptSwapRequest");
-    const travel1 = await Travel.findById(travelId1);
-    const travel2 = await Travel.findById(travelId2);
+    const travel1 = await Travel.findById(travelId1).populate('user');
+    const travel2 = await Travel.findById(travelId2).populate('user');
 
-    const userId1 = travel1.user;
-    const userId2 = travel2.user;
+    // const userId1 = travel1.user;
+    // const userId2 = travel2.user;
 
-    const user1 = await User.findById(userId1);
-    const user2 = await User.findById(userId2);
+    const user1 = travel1.user;
+    const user2 = travel2.user;
 
     if (!user1 || !user2 || !travel1 || !travel2) {
       return res.status(404).json({ message: "User or Travel Not Found" });
     }
 
-    const message1 = `You can confirm your swaps. You may communicate with your swapping partners through ${user2.name} (${user2.email}, ${user2.phone}).`;
-    const message2 = `You can confirm your swaps. You may communicate with your swapping partners through ${user1.name} (${user1.email}, ${user1.phone}).`;
+    const message1 = `You can confirm your swaps. You may communicate with your swapping partners through ${user2.name} (${user2.email}, Please Share your Contact details if you want.`;
+    const message2 = `You can confirm your swaps. You may communicate with your swapping partners through ${user1.name} (${user1.email}, Please Share your Contact details if you want.`;
 
     const subject1 = "ConfirmYourSwap";
     const subject2 = "ConfirmYourSwap";
 
     const newSwap = new Swap({
-      user1: userId1,
-      user2: userId2,
+      user1: user1,
+      user2: user2,
       travel1: travel1._id,
       travel2: travel2._id,
     });
@@ -386,8 +386,8 @@ export const acceptSwapRequest = async (req, res) => {
     await newSwap.save();
 
     await sendNotification({
-      userId1: userId1,
-      userId2: userId2,
+      user1: user1,
+      user2: user2,
       message1: message1,
       message2: message2,
       subject1: subject1,
