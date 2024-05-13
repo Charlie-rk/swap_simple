@@ -48,7 +48,7 @@ router.get("/:pnrNumber", async (req, res) => {
       currentBerthNo: passenger.currentBerthNo,
     }));
     console.log(passengers);
-
+        
     const travel = new Travel({
       pnrNo: pnrNumber,
       user: JSON.parse(user),

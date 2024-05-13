@@ -52,6 +52,7 @@ export const markNotificationAsSeen = async (req, res) => {
   try {
     // Extract the userId and notificationId from the request parameters
     const { userId, notificationId } = req.params;
+    console.log("Mark nitfication section here")
     console.log("userId", userId);
     console.log("notificationId", notificationId);
 
@@ -92,6 +93,7 @@ export const markNotificationAsSeen = async (req, res) => {
 
 export const deactivateNotification = async (req, res) => {
   try {
+    console.log("deactvitidfffffffffffff");
     const { userId, notificationId } = req.params;
     console.log(userId);
     console.log(notificationId);
@@ -301,6 +303,163 @@ export const sendNotification = async ({ user1, user2, message1, message2, subje
   }
 };
 
+export const sendNotification2 = async ({ user1, user2, message1, message2, subject1, subject2, takeResponse1, takeResponse2, travelId1, travelId2 }) => {
+  try {
+    console.log(user1);
+    console.log(user2);
+    // const user1 = await User.findById(userId1);
+    // const user2 = await User.findById(userId2);
+
+    if (!user1 || !user2) {
+      console.error("User Not Found");
+      return;
+    }
+
+    user1.notifications.push({ message: `${message1}`, subject: `${subject1}`, takeResponse: takeResponse1, ownTravelId: `${travelId1}`, otherTravelId: `${travelId2}` });
+    user2.notifications.push({ message: `${message2}`, subject: `${subject2}`, takeResponse: takeResponse2, ownTravelId: `${travelId2}`, otherTravelId: `${travelId1}` });
+
+    await user1.save();
+    await user2.save();
+    console.log(user1.email);
+    console.log(user2.email);
+    const emailOptions1= {
+      from: {
+        name: "Rustam Kumar",
+        address: "rustampavri1275@gmail.com",
+      },
+      to: user1.email,
+      subject: "ConfirmYourSwap",
+      text: "Swap-simple",
+      html: `
+      <html>
+      <head>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+          }
+          .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+          }
+          h1 {
+            color: #333;
+            text-align: center;
+          }
+          .body-section {
+            margin-top: 20px;
+          }
+          p {
+            color: #666;
+            line-height: 1.6;
+          }
+          .thank-you {
+            margin-top: 20px;
+            text-align: center;
+          }
+        </style>
+      </head>
+      <body>
+      <div class="container">
+      <h1>Swap Your Seat</h1>
+      <div class="body-section">
+          <p>🤗 We're thrilled to facilitate your seat swaps. You may confirm your swaps and communicate with your swapping partners through <span style="font-weight: bold; color: green;">${user2.name}</span> (<span style="font-weight: bold; color: red;">${user2.email}</span>).<br> Please feel free to share your contact details if you wish. 😊</p>
+          <hr />
+          <p>Please await final confirmation from <b style="color: green;">${user2.username}</b> regarding the swap. Your patience is greatly appreciated.</p>
+          <p>For further inquiries, please visit the <b>Notification</b> section of the site.</p>
+      </div>
+      
+      <div class="thank-you">
+          <p>❤️ Thank you for choosing our service! ❤️</p>
+          <p>Rustam & Sangam</p>
+      </div>
+  </div>
+  
+      </body>
+    </html>
+     `,
+      cc: ["sangamkr.mishra@gmail.com"], // Corrected cc field to be an array
+    };
+    const emailOptions2= {
+      from: {
+        name: "Rustam Kumar",
+        address: "rustampavri1275@gmail.com",
+      },
+      to: user2.email,
+      subject: "ConfirmYourSwap",
+      text: "Swap-simple",
+      html: `
+      <html>
+      <head>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+          }
+          .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+          }
+          h1 {
+            color: #333;
+            text-align: center;
+          }
+          .body-section {
+            margin-top: 20px;
+          }
+          p {
+            color: #666;
+            line-height: 1.6;
+          }
+          .thank-you {
+            margin-top: 20px;
+            text-align: center;
+          }
+        </style>
+      </head>
+      <body>
+      <div class="container">
+      <h1>Swap Your Seat</h1>
+      <div class="body-section">
+          <p>🤗 We're thrilled to facilitate your seat swaps. You may confirm your swaps and communicate with your swapping partners through <span style="font-weight: bold; color: green;">${user1.name}</span> (<span style="font-weight: bold; color: red;">${user1.email}</span>).<br> Please feel free to share your contact details if you wish. 😊</p>
+          <hr />
+          <p>Please await final confirmation from <b style="color: green;">${user1.username}</b> regarding the swap. Your patience is greatly appreciated.</p>
+          <p>For further inquiries, please visit the <b>Notification</b> section of the site.</p>
+      </div>
+      
+      <div class="thank-you">
+          <p>❤️ Thank you for choosing our service! ❤️</p>
+          <p>Rustam & Sangam</p>
+      </div>
+  </div>
+  
+      </body>
+    </html>
+     `,
+      cc: ["sangamkr.mishra@gmail.com"], // Corrected cc field to be an array
+    };
+   
+    await sendMail(emailOptions1);
+    await sendMail(emailOptions2);
+   
+
+    console.log("Notifications sent successfully");
+  } catch (error) {
+    console.error("Error sending Notification", error);
+    // Logging and returning instead of throwing error
+  }
+};
+
 export const swapRequestNotification = async (req, res) => {
   console.log("Swap request notification");
   console.log(req.body);
@@ -313,14 +472,14 @@ export const swapRequestNotification = async (req, res) => {
     const requesterTravel = await Travel.findById(requesterTravelId).populate('user');
     const accepterTravel = await Travel.findById(accepterTravelId).populate('user');
 
-
-    // console.log(requesterTravel);
-    // console.log(accepterTravel);
+   console.log("travel model");
+    console.log(requesterTravel);
+    console.log(accepterTravel);
     const requesterUser = requesterTravel.user;
     const accepterUser = accepterTravel.user;
 
-    console.log(requesterUser);
-    console.log(accepterUser);
+    console.log("requesting body"+requesterUser);
+    console.log("accepting body"+accepterUser);
     const PresentSeat = requesterTravel.passengerInfo;
     const WantedSeat = accepterTravel.passengerInfo;
     const messageToAccepter = `Someone with ${PresentSeat} is requesting to swap seats with you`;
@@ -329,7 +488,9 @@ export const swapRequestNotification = async (req, res) => {
     const subjectforRequester = "RequestSeatSwap";
     const subjectforAccepter = "AcceptSeatSwap";
 
-    await sendNotification({
+    await sendNotification({   
+        // 6641dd09f5223bf77237b040
+        //                          6641dd51f5223bf77237b07f
       user1: requesterUser,
       user2: accepterUser,
       message1: messageToRequester,
@@ -385,7 +546,7 @@ export const acceptSwapRequest = async (req, res) => {
 
     await newSwap.save();
 
-    await sendNotification({
+    await sendNotification2({
       user1: user1,
       user2: user2,
       message1: message1,
@@ -397,7 +558,7 @@ export const acceptSwapRequest = async (req, res) => {
       travelId1: travel1._id,
       travelId2: travel2._id
     });
-
+     console.log("ACCEPT SEAT REQUEST");
     return res
       .status(200)
       .json({ message: "Contact information swapped successfully" });
@@ -409,7 +570,9 @@ export const acceptSwapRequest = async (req, res) => {
 
 
 export const confirmSwapSeat = async (req, res) => {
+  console.log("🙌 final swap so let se what happen !!!!!! 🕵️‍♂️🕵️‍♂️🕵️‍♂️🕵️‍♂️🕵️‍♂️")
   const { userId, ownTravelId, otherTravelId } = req.body;
+  console.log(req.body)
   try {
     const swap = await Swap.findOne({
       $or: [{ user1: userId, travel1: ownTravelId, travel2: otherTravelId }, { user2: userId, travel1: otherTravelId, travel2: ownTravelId }]
@@ -431,8 +594,9 @@ export const confirmSwapSeat = async (req, res) => {
     if (!(swap.isConfirmedByUser1 && swap.isConfirmedByUser2)) {
       return res.status(400).json({ message: "Swap not confirmed by both users" });
     }
-    const travel1 = await Travel.findByIdAndDelete(ownTravelId);
-    const travel2 = await Travel.findByIdAndDelete(otherTravelId);
+    const travel1 = await Travel.findByIdAndDelete(ownTravelId).populate('user');
+    console.log(travel1);
+    const travel2 = await Travel.findByIdAndDelete(otherTravelId).populate('user');;
     if (!travel1 || !travel2) {
       return res.status(404).json({ message: "Travel documents not found" });
 
@@ -443,8 +607,8 @@ export const confirmSwapSeat = async (req, res) => {
     const subject1 = "SeatSwapConfirmed";
     const subject2 = "SeatSwapConfirmed";
     await sendNotification({
-      userId1: travel1.user._id,
-      userId2: travel2.user._id,
+      user1: travel1.user,
+      user2: travel2.user,
       message1: user1Message,
       message2: user2Message,
       subject1: subject1,
@@ -454,7 +618,7 @@ export const confirmSwapSeat = async (req, res) => {
       travelId1: travel1._id,
       travelId2: travel2._id
     });
-
+      console.log("succed you completed")
     return res.status(200).json({
       message: "Travel schemas deleted successfully and notifications sent",
     });
