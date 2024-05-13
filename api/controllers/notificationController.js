@@ -351,6 +351,8 @@ export const swapRequestNotification = async (req, res) => {
   }
 };
 
+
+
 export const acceptSwapRequest = async (req, res) => {
   const { travelId1, travelId2 } = req.body;
 
@@ -406,6 +408,69 @@ export const acceptSwapRequest = async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const rejectSwapRequest=async(req, res)=>{
+  //travel
+  const { requesterTravelId, rejecterTravelId } = req.body;
+
+  try {
+
+    console.log("I am inside rejectSwapRequest");
+    // const travel1 = await Travel.findById(travelId1).populate('user');
+    const requesterTravel=await Travel.findById(requesterTravelId).populate('user');
+    const rejecterTravel=await Travel.findById(rejecterTravelId).populate('user');
+
+    // const travel2 = await Travel.findById(travelId2).populate('user');
+    const requester=requesterTravel.user;
+    const rejecter=rejecterTravel.user;
+  
+
+    if (!requester || !rejecter || !requesterTravel || !rejecterTravel) {
+      return res.status(404).json({ message: "User or Travel Not Found" });
+    }
+
+    const messageToRequester=`Your request for the seat( ${rejecterTravel.passengerInfo} ) has been rejected`;
+    const messageToRejecter=`You have successfully rejected the request for the swapping your seat with the seat( ${requesterTravel.passengerInfo} )`;
+
+    // const message1 = `You can confirm your swaps. You may communicate with your swapping partners through ${user2.name} (${user2.email}, Please Share your Contact details if you want.`;
+    // const message2 = `You can confirm your swaps. You may communicate with your swapping partners through ${user1.name} (${user1.email}, Please Share your Contact details if you want.`;
+    
+    // const subject1 = "ConfirmYourSwap";
+    // const subject2 = "ConfirmYourSwap";
+    
+    const subjectForRequester="RequestRejected";
+    const subjectForRejecter="SuccessfulRejection";
+
+    const newSwap = new Swap({
+      user1: requester,
+      user2: rejecter,
+      travel1: requesterTravelId,
+      travel2: rejecterTravelId
+    });
+
+    await newSwap.save();
+
+    await sendNotification({
+      user1: requester,
+      user2: rejecter,
+      message1: messageToRequester,
+      message2: messageToRejecter,
+      subject1: subjectForRequester,
+      subject2: subjectForRejecter,
+      takeResponse1: false,
+      takeResponse2: false,
+      travelId1: requesterTravelId,
+      travelId2: rejecterTravelId
+    });
+
+    return res
+      .status(200)
+      .json({ message: "Request Rejection Done successfully" });
+  } catch (error) {
+    console.error("Error rejecting request", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
 
 
 export const confirmSwapSeat = async (req, res) => {
