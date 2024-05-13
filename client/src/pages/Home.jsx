@@ -41,7 +41,9 @@ export default function Home() {
     e.preventDefault();
     try {
       setSuccess(false);
-      const res = await fetch(`/api/pnr/${pnr}?user=${encodeURIComponent(JSON.stringify(currentUser))}`, {
+      // const res = await fetch(`/api/pnr/${pnr}?user=${encodeURIComponent(JSON.stringify(currentUser))}`, {
+        console.log(currentUser);
+        const res = await fetch(`/api/pnr/${pnr}?userId=currentUser._id`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
       });
