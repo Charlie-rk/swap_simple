@@ -127,11 +127,33 @@ export function NotificationCard(props) {
     }
   };
 
-  const handleFailure = () => {
-    console.log("i am inside handleFailure");
-    deactivateNotification();
-  };
 
+
+  const handleFailure = async () => {
+    try {
+      console.log("Inside handleFailure");
+      const res = await fetch("/api/pnr/rejectSwapRequest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          requesterTravelId: props.otherTravelId,
+          rejecterTravelId: props.ownTravelId
+        }),
+      });
+  
+      if (res.ok) {
+        console.log("Swap request rejected successfully");
+        // If you want to perform any action after successful rejection, you can do it here
+      } else {
+        console.error("Failed to reject swap request");
+        // Handle error appropriately
+      }
+    } catch (error) {
+      console.error("Error handling failure:", error);
+      // Handle error appropriately
+    }
+  };
+  
   return (
     <div className="my-2 ">
       <Banner className="rounded-lg ">
@@ -181,7 +203,9 @@ export function NotificationCard(props) {
               </a>
             </div>
 
-            <div className="w-full sm:mr-2 mt-2 sm:mt-0">
+            {/* <div className="w-full sm:mr-2 mt-2 sm:mt-0 "> */}
+            <div className={`w-full sm:mr-2 mt-2 sm:mt-0 ${!props.takeResponse ? "hidden" : ""}`}> 
+
               {/* <Button pill>Default</Button>
       <Button color="blue" pill>
         Blue
