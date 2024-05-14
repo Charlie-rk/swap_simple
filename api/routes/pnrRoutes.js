@@ -29,6 +29,7 @@ router.post("/rejectSwapRequest", rejectSwapRequest);
 router.get("/:pnrNumber", async (req, res) => {
   console.log("GET DETAILS OF PNR ::")
   const { pnrNumber } = req.params;
+  
   const { user } = req.query; // Extract user from URL parameters
    console.log(user);
   // const travel = await Travel.findOne({ pnrNo: pnrNumber });
