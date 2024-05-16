@@ -43,7 +43,7 @@ export default function Home() {
       setSuccess(false);
       // const res = await fetch(`/api/pnr/${pnr}?user=${encodeURIComponent(JSON.stringify(currentUser))}`, {
         console.log(currentUser);
-        const res = await fetch(`/api/pnr/${pnr}?userId=currentUser._id`, {
+        const res = await fetch(`/api/pnr/${pnr}?userId=${currentUser._id}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
       });
@@ -56,6 +56,7 @@ export default function Home() {
         console.log(data.travel._id);
         // Scroll to the section where PnrCard is displayed
         dispatch(setTravelID({ travel__Id: data.travel._id }));
+        console.log(data.travel._id);
         scrollUp();
        
       } else {

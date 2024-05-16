@@ -7,6 +7,7 @@ import Swap from "../models/swapModel.js";
 import Travel from "../models/travelModel.js";
 
 import 'dotenv/config';
+import Request from "../models/requestModel.js";
 
 export const getAllNotifications = async (req, res) => {
   console.log("RKSAN");
@@ -639,33 +640,50 @@ export const confirmSwapSeat = async (req, res) => {
   const { userId, ownTravelId, otherTravelId } = req.body;
   console.log(req.body)
   try {
+    console.log("HII1");
     const swap = await Swap.findOne({
       $or: [{ user1: userId, travel1: ownTravelId, travel2: otherTravelId }, { user2: userId, travel1: otherTravelId, travel2: ownTravelId }]
     });
-
+    console.log("HII2");
     if (!swap) {
       return res.status(404).json({ message: "Swap not found or not confirmed" });
     }
-
+    console.log("HII3");
     // if(swap.travel1.equals(ownTravelId))
     if (swap.user1.equals(userId)) {
       swap.isConfirmedByUser1 = true;
     }
-    else if (swap.user2.equals(userId)) {
+    if (swap.user2.equals(userId)) {
       swap.isConfirmedByUser2 = true;
     }
     await swap.save();
-
+    console.log("HII4");
     if (!(swap.isConfirmedByUser1 && swap.isConfirmedByUser2)) {
+      console.log("ytu");
       return res.status(400).json({ message: "Swap not confirmed by both users" });
     }
+    console.log("HII5");
     const travel1 = await Travel.findByIdAndDelete(ownTravelId).populate('user');
     console.log(travel1);
-    const travel2 = await Travel.findByIdAndDelete(otherTravelId).populate('user');;
+    const travel2 = await Travel.findByIdAndDelete(otherTravelId).populate('user');
+   // const travel=await Travel.findById(travelID);
+    // if(!travel){
+    //     return res.status(505).json({
+    //         status:"false",
+    //         message:"Travel not Found",
+    //     })
+    // }
+  
     if (!travel1 || !travel2) {
       return res.status(404).json({ message: "Travel documents not found" });
 
     }
+    const rest=await Request.findOne({travelID:ownTravelId});
+    console.log(rest);
+     const resl=await Request.findOneAndDelete({travelID:ownTravelId});
+     const resl2=await Request.findOneAndDelete({travelID:otherTravelId});
+    
+     console.log("deleted Success");
     const user1Message = `Your seat (${travel1.seatInfo.coach}-${travel1.seatInfo.berth}) is confirmed with ${travel2.user.name}'s seat (${travel2.seatInfo.coach}-${travel2.seatInfo.berth}).`;
     const user2Message = `Your seat (${travel2.seatInfo.coach}-${travel2.seatInfo.berth}) is confirmed with ${travel1.user.name}'s seat (${travel1.seatInfo.coach}-${travel1.seatInfo.berth}).`;
 

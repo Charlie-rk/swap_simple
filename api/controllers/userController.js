@@ -133,26 +133,3 @@ export const getUser = async (req, res, next) => {
   }
 };
 
-export const getRequest = async (req, res, next) => {
-  console.log("RK________999999");
-  try {
-    console.log("Pavri");
-    //console.log(req);
-   
-    const requests = await Request.find();
-      console.log(requests);
-      res.status(200).json({
-        status: true,
-        requests: requests
-      });
-   
-    
-    
-  } catch (error) {
-    console.error("Error fetching requests:", error);
-    res.status(500).json({
-      status: false,
-      message: "Error fetching requests"
-    });
-  }
-}

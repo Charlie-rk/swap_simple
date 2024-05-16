@@ -1,9 +1,21 @@
 import mongoose from "mongoose";
 const requestSchema = new mongoose.Schema({
-    name:{
-        type: String,
-        ref:'users',
+    user:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'User',
         // required:true
+    },
+    pnrNo:{
+        type:String,
+        required:true,
+    },
+    trainNo:{
+        type:String,
+        required:true,
+    },
+    travelID:{
+        type:String,
+        required:true
     },
     trainID:{
         type:String,

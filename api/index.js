@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import userRoute from "./routes/userRoute.js";
 import authRoute from "./routes/authRoute.js";
 import pnrRoute from './routes/pnrRoutes.js';
+import requestRoute from './routes/requestRoute.js';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 dotenv.config();
@@ -27,6 +28,7 @@ app.listen(3000,()=>{
 app.use("/api/user",userRoute);
 app.use("/api/auth",authRoute);
 app.use("/api/pnr",pnrRoute);
+app.use("/api/req",requestRoute);// request 
 
 app.use((err,req,res,next)=>{
     const statusCode=err.statusCode||500;

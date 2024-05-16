@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
+
 import ReactDOM from "react-dom";
 import React, { useState } from "react";
 import { Button, Card } from "flowbite-react";
@@ -10,7 +11,7 @@ import withReactContent from 'sweetalert2-react-content'
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 const CardList = ({ travel,pnr }) => {
- // const data=useSelector((state))
+ // const data=useSelector((state))56
   const { travel__Id } = useSelector((state) => state.user);
   const {currentUser}=useSelector((state)=>state.user);
   console.log(currentUser);
@@ -79,7 +80,27 @@ const CardList = ({ travel,pnr }) => {
   
       } else if (result.isDenied) {
         // Handle deny action
+        const res = await fetch(`/api/req/${currentUser._id}/${travel__Id}/add_request`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+          })
+        });
+  
+        const data = await res.json();
+        console.log(data);
+        if(data.status==='202'&&data.success==='false'){
+          MySwal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "You are not allowed for multiple request for a single Pnr no .",
+          });
+          navigate("/");
+        }
         console.log("hi--2");
+        if(data.success==='true'){
+
+        
         MySwal.fire({
           title: "Swap - Simple",
           html: `
@@ -92,6 +113,7 @@ const CardList = ({ travel,pnr }) => {
           icon: "success"
         });
         navigate("/request");
+      }
         // go for pull request 
       } else {
         // Handle cancel action

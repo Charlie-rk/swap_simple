@@ -31,7 +31,10 @@ router.get("/:pnrNumber", async (req, res) => {
   const { pnrNumber } = req.params;
   
  // const { user } = req.query; // Extract user from URL parameters
-  const { userId } = req.query.userId; // Extract user from URL parameters
+  const  userId  = req.query.userId; // Extract user from URL parameters
+  console.log(req.query.userId);
+  console.log(userId);
+
   const user=await User.findById(userId);
    console.log(user);
   // const travel = await Travel.findOne({ pnrNo: pnrNumber });
@@ -55,7 +58,7 @@ router.get("/:pnrNumber", async (req, res) => {
         
     const travel = new Travel({
       pnrNo: pnrNumber,
-      user: JSON.parse(user),
+      user: user,
       boardingInfo: {
         trainId: pnrStatus.data.boardingInfo.trainId,
         stationId: pnrStatus.data.boardingInfo.stationId,
@@ -83,7 +86,7 @@ router.get("/:pnrNumber", async (req, res) => {
 
     let data = await travel.save();
     console.log("hi i am data", data);
-
+      
     res.status(201).json({ success: true, message: "Succesful", travel });
   } catch (error) {
     res.status(500).json({ error: "Internal server error" });
@@ -198,27 +201,32 @@ router.post("/:pnrNumber/swap-seat", async (req, res,next) => {
     const preferenceList = req.body.preferenceList; // Assuming preferenceList is provided in the request body
     travelModel.preferences = preferenceList; // Assign the preference list to travelModel
     await travelModel.save(); // Save the updated travel model
-    
+    console.log("Updated Prefernce");
+    console.log(travelModel);
     // saving the request 
-
-    const request=new Request({
-       name:req.body.name,
-       trainID:travelModel.trainInfo.name,
-       boardingStation:travelModel.boardingInfo.stationName,
-       destinationStation:travelModel.destinationInfo.stationName,
-       dt:travelModel.trainInfo.dt,
-       isSwap:false,
-       preferences:preferenceList,
-    })
+    //  const request=await findOne({trainID:travelModel._id});
+    //   request.preferences=preferenceList;
+    //   await request.save();
+    //   console.log("Lo ho gaya update prefernces");
+    //   console.log(request);
+    // const request=new Request({
+    //    name:req.body.name,
+    //    trainID:travelModel.trainInfo.name,
+    //    boardingStation:travelModel.boardingInfo.stationName,
+    //    destinationStation:travelModel.destinationInfo.stationName,
+    //    dt:travelModel.trainInfo.dt,
+    //    isSwap:false,
+    //    preferences:preferenceList,
+    // })
    
-    try{
-       await request.save();
-       console.log("Request Model update ");
-       console.log(request);
-     }
-     catch(error){
-      next(error);
-     }
+    // try{
+    //    await request.save();
+    //    console.log("Request Model update ");
+    //    console.log(request);
+    //  }
+    //  catch(error){
+    //   next(error);
+    //  }
 
     // Step 2: Extract train number and date from the travel model
     const { trainNo, dt } = travelModel.trainInfo;
@@ -266,15 +274,15 @@ router.post("/:pnrNumber/swap-seat", async (req, res,next) => {
       );
     });
 
-    if (perfectFilteredTravels.length === 0) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "No perfect swapping matches found",
-          travels: [],
-        });
-    }
+    // if (perfectFilteredTravels.length === 0) {
+    //   return res
+    //     .status(404)
+    //     .json({
+    //       success: false,
+    //       message: "No perfect swapping matches found",
+    //       travels: [],
+    //     });
+    // }
 
     // Update preferences in the found travel model
    console.log("PArtially");
