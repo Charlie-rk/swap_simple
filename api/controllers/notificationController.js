@@ -123,15 +123,31 @@ export const deactivateNotification = async (req, res) => {
   }
 }
 
+export const deleteNotification = async (req, res) => {
+  console.log("I am inside deleteNotification");
+  try {
+
+    const notificationId = req.body.notificationId;
+    const result = await User.updateOne({ "notifications._id": notificationId }, { $pull: { notifications: { _id: notificationId } } });
+    if (result.nModified === 0) {
+      return res.status(404).json({ message: "Notification not found" });
+    }
+    res.status(200).json({ message: "Notification deleted successfully" });
+  } catch (error) {
+    console.log("Error deleting notifications: ", error);
+    res.status(500).json({ message: "Server error" });
+  }
+
+}
 const transporter = nodemailer.createTransport({
   service: "gmail",
   host: "smtp.gmail.com",
   port: 587,
   secure: false,
   auth: {
-    user:"rustampavri1275@gmail.com",
+    user: "rustampavri1275@gmail.com",
     //"djyh phga iwhf nkyr"
-    pass:"djyh phga iwhf nkyr",
+    pass: "djyh phga iwhf nkyr",
   },
 });
 
@@ -164,7 +180,7 @@ export const sendNotification = async ({ user1, user2, message1, message2, subje
     await user2.save();
     console.log(user1.email);
     console.log(user2.email);
-    const emailOptions1= {
+    const emailOptions1 = {
       from: {
         name: "Rustam Kumar",
         address: "rustampavri1275@gmail.com",
@@ -323,7 +339,7 @@ export const sendNotification2 = async ({ user1, user2, message1, message2, subj
     await user2.save();
     console.log(user1.email);
     console.log(user2.email);
-    const emailOptions1= {
+    const emailOptions1 = {
       from: {
         name: "Rustam Kumar",
         address: "rustampavri1275@gmail.com",
@@ -386,7 +402,7 @@ export const sendNotification2 = async ({ user1, user2, message1, message2, subj
      `,
       cc: ["sangamkr.mishra@gmail.com"], // Corrected cc field to be an array
     };
-    const emailOptions2= {
+    const emailOptions2 = {
       from: {
         name: "Rustam Kumar",
         address: "rustampavri1275@gmail.com",
@@ -449,10 +465,10 @@ export const sendNotification2 = async ({ user1, user2, message1, message2, subj
      `,
       cc: ["sangamkr.mishra@gmail.com"], // Corrected cc field to be an array
     };
-   
+
     await sendMail(emailOptions1);
     await sendMail(emailOptions2);
-   
+
 
     console.log("Notifications sent successfully");
   } catch (error) {
@@ -473,14 +489,14 @@ export const swapRequestNotification = async (req, res) => {
     const requesterTravel = await Travel.findById(requesterTravelId).populate('user');
     const accepterTravel = await Travel.findById(accepterTravelId).populate('user');
 
-   console.log("travel model");
+    console.log("travel model");
     console.log(requesterTravel);
     console.log(accepterTravel);
     const requesterUser = requesterTravel.user;
     const accepterUser = accepterTravel.user;
 
-    console.log("requesting body"+requesterUser);
-    console.log("accepting body"+accepterUser);
+    console.log("requesting body" + requesterUser);
+    console.log("accepting body" + accepterUser);
     const PresentSeat = requesterTravel.passengerInfo;
     const WantedSeat = accepterTravel.passengerInfo;
     const messageToAccepter = `Someone with ${PresentSeat} is requesting to swap seats with you`;
@@ -489,9 +505,9 @@ export const swapRequestNotification = async (req, res) => {
     const subjectforRequester = "RequestSeatSwap";
     const subjectforAccepter = "AcceptSeatSwap";
 
-    await sendNotification({   
-        // 6641dd09f5223bf77237b040
-        //                          6641dd51f5223bf77237b07f
+    await sendNotification({
+      // 6641dd09f5223bf77237b040
+      //                          6641dd51f5223bf77237b07f
       user1: requesterUser,
       user2: accepterUser,
       message1: messageToRequester,
@@ -506,7 +522,7 @@ export const swapRequestNotification = async (req, res) => {
     console.log("Notify him succeed");
     return res
       .status(200)
-      .json({ message: "Swap request notification sent successfully" ,success:"true"});
+      .json({ message: "Swap request notification sent successfully", success: "true" });
   } catch (error) {
     console.error("Error sending swap request notification", error);
     return res.status(500).json({ error: "Internal server error" });
@@ -561,7 +577,7 @@ export const acceptSwapRequest = async (req, res) => {
       travelId1: travel1._id,
       travelId2: travel2._id
     });
-     console.log("ACCEPT SEAT REQUEST");
+    console.log("ACCEPT SEAT REQUEST");
     return res
       .status(200)
       .json({ message: "Contact information swapped successfully" });
@@ -571,7 +587,7 @@ export const acceptSwapRequest = async (req, res) => {
   }
 };
 
-export const rejectSwapRequest=async(req, res)=>{
+export const rejectSwapRequest = async (req, res) => {
   //travel
   const { requesterTravelId, rejecterTravelId } = req.body;
 
@@ -579,29 +595,29 @@ export const rejectSwapRequest=async(req, res)=>{
 
     console.log("I am inside rejectSwapRequest");
     // const travel1 = await Travel.findById(travelId1).populate('user');
-    const requesterTravel=await Travel.findById(requesterTravelId).populate('user');
-    const rejecterTravel=await Travel.findById(rejecterTravelId).populate('user');
+    const requesterTravel = await Travel.findById(requesterTravelId).populate('user');
+    const rejecterTravel = await Travel.findById(rejecterTravelId).populate('user');
 
     // const travel2 = await Travel.findById(travelId2).populate('user');
-    const requester=requesterTravel.user;
-    const rejecter=rejecterTravel.user;
-  
+    const requester = requesterTravel.user;
+    const rejecter = rejecterTravel.user;
+
 
     if (!requester || !rejecter || !requesterTravel || !rejecterTravel) {
       return res.status(404).json({ message: "User or Travel Not Found" });
     }
 
-    const messageToRequester=`Your request for the seat( ${rejecterTravel.passengerInfo} ) has been rejected`;
-    const messageToRejecter=`You have successfully rejected the request for the swapping your seat with the seat( ${requesterTravel.passengerInfo} )`;
+    const messageToRequester = `Your request for the seat( ${rejecterTravel.passengerInfo} ) has been rejected`;
+    const messageToRejecter = `You have successfully rejected the request for the swapping your seat with the seat( ${requesterTravel.passengerInfo} )`;
 
     // const message1 = `You can confirm your swaps. You may communicate with your swapping partners through ${user2.name} (${user2.email}, Please Share your Contact details if you want.`;
     // const message2 = `You can confirm your swaps. You may communicate with your swapping partners through ${user1.name} (${user1.email}, Please Share your Contact details if you want.`;
-    
+
     // const subject1 = "ConfirmYourSwap";
     // const subject2 = "ConfirmYourSwap";
-    
-    const subjectForRequester="RequestRejected";
-    const subjectForRejecter="SuccessfulRejection";
+
+    const subjectForRequester = "RequestRejected";
+    const subjectForRejecter = "SuccessfulRejection";
 
     const newSwap = new Swap({
       user1: requester,
@@ -666,24 +682,24 @@ export const confirmSwapSeat = async (req, res) => {
     const travel1 = await Travel.findByIdAndDelete(ownTravelId).populate('user');
     console.log(travel1);
     const travel2 = await Travel.findByIdAndDelete(otherTravelId).populate('user');
-   // const travel=await Travel.findById(travelID);
+    // const travel=await Travel.findById(travelID);
     // if(!travel){
     //     return res.status(505).json({
     //         status:"false",
     //         message:"Travel not Found",
     //     })
     // }
-  
+
     if (!travel1 || !travel2) {
       return res.status(404).json({ message: "Travel documents not found" });
 
     }
-    const rest=await Request.findOne({travelID:ownTravelId});
+    const rest = await Request.findOne({ travelID: ownTravelId });
     console.log(rest);
-     const resl=await Request.findOneAndDelete({travelID:ownTravelId});
-     const resl2=await Request.findOneAndDelete({travelID:otherTravelId});
-    
-     console.log("deleted Success");
+    const resl = await Request.findOneAndDelete({ travelID: ownTravelId });
+    const resl2 = await Request.findOneAndDelete({ travelID: otherTravelId });
+
+    console.log("deleted Success");
     const user1Message = `Your seat (${travel1.seatInfo.coach}-${travel1.seatInfo.berth}) is confirmed with ${travel2.user.name}'s seat (${travel2.seatInfo.coach}-${travel2.seatInfo.berth}).`;
     const user2Message = `Your seat (${travel2.seatInfo.coach}-${travel2.seatInfo.berth}) is confirmed with ${travel1.user.name}'s seat (${travel1.seatInfo.coach}-${travel1.seatInfo.berth}).`;
 
@@ -701,7 +717,7 @@ export const confirmSwapSeat = async (req, res) => {
       travelId1: travel1._id,
       travelId2: travel2._id
     });
-      console.log("succed you completed")
+    console.log("succed you completed")
     return res.status(200).json({
       message: "Travel schemas deleted successfully and notifications sent",
     });

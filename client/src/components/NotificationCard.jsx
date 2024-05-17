@@ -83,7 +83,7 @@ export function NotificationCard(props) {
   };
 
   const handleSuccess = async () => {
-    try { 
+    try {
       console.log("I am inside handleSuccess");
       if (props.subject === "AcceptSeatSwap") {
         const res = await fetch("/api/pnr/acceptSwap", {
@@ -125,6 +125,7 @@ export function NotificationCard(props) {
       console.error("Error handling success:", error);
       // Handle error appropriately
     }
+    window.location.reload();
   };
 
 
@@ -140,7 +141,7 @@ export function NotificationCard(props) {
           rejecterTravelId: props.ownTravelId
         }),
       });
-  
+
       if (res.ok) {
         console.log("Swap request rejected successfully");
         // If you want to perform any action after successful rejection, you can do it here
@@ -152,8 +153,43 @@ export function NotificationCard(props) {
       console.error("Error handling failure:", error);
       // Handle error appropriately
     }
+    window.location.reload();
   };
-  
+
+  const handleDelete = async () => {
+    try {
+      console.log("Inside handleDelete in frontend");
+      if(props.takeResponse && props.active){
+        window.location.reload();
+        window.alert("You have some unanswered query in the message. Please complete it before deleting");
+        return;
+      }
+      const confirmDelete = window.confirm("Are you sure you want to delete this notification?");
+      if (!confirmDelete) {
+        window.location.reload();
+        return; // If the user cancels the confirmation, exit the function
+      }
+      const res = await fetch('/api/pnr/deleteNotification', {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          notificationId: props.notificationId
+        })
+      });
+
+      if (res.ok) {
+        console.log("Notification deleted successfully");
+        // If you want to perform any action after successful deletion, you can do it here
+      } else {
+        console.error("Failed to delete notification successfully");
+        // Handle error appropriately
+      }
+    } catch (error) {
+      console.log("Error deleting notification", error);
+    }
+  }
+
+
   return (
     <div className="my-2 ">
       <Banner className="rounded-lg ">
@@ -166,9 +202,8 @@ export function NotificationCard(props) {
             </h2>
             {/* <p className={`flex items-center text-sm ${seen?:'font-normal':'font-bold'} text-gray-500 dark:text-gray-400`}> */}
             <p
-              className={`flex items-center text-sm ${
-                seen ? "font-normal" : "font-bold"
-              } text-gray-500 dark:text-gray-400`}
+              className={`flex items-center text-sm ${seen ? "font-normal" : "font-bold"
+                } text-gray-500 dark:text-gray-400`}
             >
               {showFullMessage
                 ? props.message
@@ -192,8 +227,8 @@ export function NotificationCard(props) {
                 )}
                 {/* {showFullMessage?'Show less' : 'Show more'} */}
               </a>
-              </div>
-              <div className="sm:mr-2 mt-2 sm:mt-0">
+            </div>
+            <div className="sm:mr-2 mt-2 sm:mt-0">
               <a
                 href="#"
                 className=" w-full mr-2 inline-flex flex-row items-center justify-center rounded-lg bg-cyan-700 px-3 py-2 text-xs font-medium text-white hover:bg-cyan-800 focus:outline-none focus:ring-4 focus:ring-cyan-300 dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-cyan-800"
@@ -204,7 +239,7 @@ export function NotificationCard(props) {
             </div>
 
             {/* <div className="w-full sm:mr-2 mt-2 sm:mt-0 "> */}
-            <div className={`w-full sm:mr-2 mt-2 sm:mt-0 ${!props.takeResponse ? "hidden" : ""}`}> 
+            <div className={`w-full sm:mr-2 mt-2 sm:mt-0 ${!props.takeResponse ? "hidden" : ""}`}>
 
               {/* <Button pill>Default</Button>
       <Button color="blue" pill>
@@ -223,7 +258,7 @@ export function NotificationCard(props) {
               <Button
                 className="w-full rounded-lg"
                 color="success"
-                 outline
+                outline
                 onClick={() => {
                   handleSuccess();
                   markNotificationAsSeen();
@@ -234,11 +269,11 @@ export function NotificationCard(props) {
                 Success({props.subject})
               </Button>{" "}
             </div>
-            <div className={`w-full sm:mr-2 mt-2 sm:mt-0 ${!props.takeResponse ? "hidden" : ""}`}> 
+            <div className={`w-full sm:mr-2 mt-2 sm:mt-0 ${!props.takeResponse ? "hidden" : ""}`}>
               <Button
-                 className="w-full rounded-lg"
+                className="w-full rounded-lg"
                 color="failure"
-                 outline
+                outline
                 onClick={() => {
                   handleFailure();
                   markNotificationAsSeen();
@@ -263,8 +298,9 @@ export function NotificationCard(props) {
           <BannerCollapseButton
             color="gray"
             className="border-0 bg-transparent text-gray-500 dark:text-gray-400"
+
           >
-            <HiX className="h-4 w-4" />
+            <HiX className="h-4 w-4" onClick={handleDelete} />
           </BannerCollapseButton>
           {/* </div> */}
         </div>
