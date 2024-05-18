@@ -10,8 +10,12 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content'
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
 const CardList = ({ travel,pnr }) => {
  // const data=useSelector((state))56
+
+  const [loading,setLoading]=useState(false);
   const { travel__Id } = useSelector((state) => state.user);
   const {currentUser}=useSelector((state)=>state.user);
   console.log(currentUser);
@@ -44,6 +48,7 @@ const CardList = ({ travel,pnr }) => {
       }
     }).then(async (result) => { // Marking the function as async here
       if (result.isConfirmed) {
+        setLoading(true);
         console.log("hi--1");
         // go for email router --
         const res = await fetch(`/api/pnr/swapRequestNotification`, {
@@ -57,6 +62,7 @@ const CardList = ({ travel,pnr }) => {
   
         const data = await res.json();
         console.log(data);
+        setLoading(false);
         if(data.success==='true'){
           MySwal.fire({
             title: "Swap - Simple",
@@ -80,6 +86,7 @@ const CardList = ({ travel,pnr }) => {
   
       } else if (result.isDenied) {
         // Handle deny action
+        setLoading(true);
         const res = await fetch(`/api/req/${currentUser._id}/${travel__Id}/add_request`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -88,6 +95,7 @@ const CardList = ({ travel,pnr }) => {
         });
   
         const data = await res.json();
+        setLoading(false);
         console.log(data);
         if(data.status==='202'&&data.success==='false'){
           MySwal.fire({
@@ -125,6 +133,13 @@ const CardList = ({ travel,pnr }) => {
   
     
   return (
+    <>
+       <Backdrop
+            sx={{ color: 'red', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={loading}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
     <Card className="max-w-sm bg-slate-100">
       <div>
         <img
@@ -206,6 +221,7 @@ const CardList = ({ travel,pnr }) => {
         </svg>
       </button>
     </Card>
+    </>
   );
 };
 

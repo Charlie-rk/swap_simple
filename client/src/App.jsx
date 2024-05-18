@@ -29,16 +29,22 @@ export default function App() {
     <Routes>  
          <Route path='/' element={<Home/>} />
         
-         <Route path='/notification' element={<NotificationPage/>}/>
+        
          <Route path='/about' element={<About/>} />
          <Route path='/help' element={<Help/>} />
          <Route path='/sign-in' element={<SignIn/>} />
          <Route path='/sign-up' element={<SignUp/>} />
-      
+         
+         <Route element={<PrivateRoute />}>
+         <Route path='/notification' element={<NotificationPage/>}/>
+        </Route>
+         <Route element={<PrivateRoute />}>
+         <Route path='/request' element={<Projects/>} />
+        </Route>
          <Route element={<PrivateRoute />}>
           <Route path='/dashboard' element={<Dashboard />} />
         </Route>
-         <Route path='/request' element={<Projects/>} />
+      
          <Route element={<PrivateRoute />}>
           <Route path='/swap-request/:pnrNumber' element={<SeatSelectionForm />} />
         </Route>

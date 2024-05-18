@@ -62,8 +62,8 @@ export default function Help() {
             </span>
           </Accordion.Title>
           <Accordion.Content>
-            <p className="mb-2 text-gray-500 dark:text-gray-400"><strong>Q: How can I reset my password?</strong></p>
-            <p className="mb-2 text-gray-500 dark:text-gray-400">A: You can reset your password by visiting the login page and clicking on the "Forgot Password" link. Follow the instructions provided to reset your password.</p>
+            {/* <p className="mb-2 text-gray-500 dark:text-gray-400"><strong>Q: How can I reset my password?</strong></p>
+            <p className="mb-2 text-gray-500 dark:text-gray-400">A: You can reset your password by visiting the login page and clicking on the "Forgot Password" link. Follow the instructions provided to reset your password.</p> */}
             <p className="mb-2 text-gray-500 dark:text-gray-400"><strong>Q: How can I update my details?</strong></p>
             <p className="mb-2 text-gray-500 dark:text-gray-400">A: You can update your details by visiting the profile section of your account. Navigate to the profile settings where you can edit your personal information such as name, email, and contact details.</p>
           </Accordion.Content>

@@ -16,6 +16,9 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa6";
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import { red } from "@mui/material/colors";
 
 export default function SignUp() {
   const [open, setOpen] = useState(false);
@@ -146,6 +149,17 @@ export default function SignUp() {
   };
 
   return (
+    <>
+       <Backdrop 
+            sx={{ color: 'green', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={loading1}
+          >
+            <CircularProgress color="inherit"  className="h-10 w-28 text-5xl"/>
+            <CircularProgress color="inherit"  className="h-10 w-28 text-5xl"/>
+            <CircularProgress color="inherit"  className="h-10 w-28 text-5xl"/>
+            <CircularProgress color="inherit"  className="h-10 w-28 text-5xl"/>
+      
+          </Backdrop>
     <div className="min-h-screen mt-20">
       <ToastContainer position="top-center" autoClose={3000} />
       <div id="recaptcha-container"></div>
@@ -154,9 +168,9 @@ export default function SignUp() {
         <div className="flex-1">
           <Link to="/" className="font-bold dark:text-white text-4xl">
             <span className="px-2 py-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg text-white">
-              Sahand's
+              Swap
             </span>
-            Blog
+            -Simple
           </Link>
           <p className="text-sm mt-5">
             This is a demo project. You can sign up with your email and password
@@ -312,5 +326,6 @@ export default function SignUp() {
         </div>
       </div>
     </div>
+    </>
   );
 }
