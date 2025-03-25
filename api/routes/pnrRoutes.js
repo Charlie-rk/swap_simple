@@ -25,37 +25,90 @@ router.post("/acceptSwap", acceptSwapRequest);
 router.post("/confirmSwap", confirmSwapSeat);
 router.post("/rejectSwapRequest", rejectSwapRequest);
 router.delete("/deleteNotification", deleteNotification);
-
 router.get("/:pnrNumber", async (req, res) => {
-  console.log("GET DETAILS OF PNR ::")
+  console.log("GET DETAILS OF PNR ::");
   const { pnrNumber } = req.params;
-  
- // const { user } = req.query; // Extract user from URL parameters
-  const  userId  = req.query.userId; // Extract user from URL parameters
-  console.log(req.query.userId);
-  console.log(userId);
+  const userId = req.query.userId; // Extract user from URL parameters
+  console.log("userId:", userId);
 
-  const user=await User.findById(userId);
-   console.log(user);
-  // const travel = await Travel.findOne({ pnrNo: pnrNumber });
-  // if (travel) {
-  //   console.log(travel);
-  //   return res.status(201).json({ success: true, message: "Succesful", travel });
-  // }
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(404).json({ success: false, message: "User not found" });
+  }
+  console.log("User:", user);
 
+  // Check if PNR number is one of the dummy ones
+  if (pnrNumber === "1275" || pnrNumber === "1276") {
+    console.log("Using dummy data for PNR:", pnrNumber);
+
+    // Common travel details for dummy data
+    const commonTravelDetails = {
+      boardingInfo: {
+        trainId: "T123",
+        stationId: "ST001",
+        stationName: "City A"
+      },
+      destinationInfo: {
+        trainId: "T123",
+        stationId: "ST002",
+        stationName: "City B"
+      },
+      trainInfo: {
+        trainNo: "12345",
+        name: "Express Line",
+        boarding: "City A",
+        destination: "City B",
+        dt: "2025-03-27T08:00:00Z" // Travel date in ISO format
+      },
+      seatInfo: {
+        coach: "B1", // same coach for both dummy records
+        noOfSeats: 1
+      }
+    };
+
+    // Different berth values based on pnrNumber
+    const berth = (pnrNumber === "1275") ? "12" : "14";
+
+    // Create dummy Travel data
+    const travel = new Travel({
+      pnrNo: pnrNumber,
+      user: user,
+      boardingInfo: commonTravelDetails.boardingInfo,
+      destinationInfo: commonTravelDetails.destinationInfo,
+      seatInfo: {
+        ...commonTravelDetails.seatInfo,
+        berth: berth
+      },
+      trainInfo: commonTravelDetails.trainInfo,
+      passengerInfo: [{
+        currentCoach: commonTravelDetails.seatInfo.coach,
+        currentBerthNo: berth
+      }]
+    });
+
+    try {
+      const data = await travel.save();
+      console.log("Dummy travel data saved:", data);
+      return res.status(201).json({ success: true, message: "Successful", travel: data });
+    } catch (error) {
+      console.error("Error saving dummy travel data:", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  }
+
+  // For non-dummy PNR numbers, proceed with the live PNR status call.
   console.log("---", pnrNumber);
-
   try {
-    console.log("hii");
+    console.log("Calling pnrController.getPNRStatus");
     const pnrStatus = await pnrController.getPNRStatus(pnrNumber);
-    console.log(pnrStatus);
-    console.log("byee");
+    console.log("PNR Status:", pnrStatus);
+
     const passengers = pnrStatus.data.passengerInfo.map((passenger) => ({
       currentCoach: passenger.currentCoach,
       currentBerthNo: passenger.currentBerthNo,
     }));
-    console.log(passengers);
-        
+    console.log("Passengers:", passengers);
+    
     const travel = new Travel({
       pnrNo: pnrNumber,
       user: user,
@@ -84,12 +137,13 @@ router.get("/:pnrNumber", async (req, res) => {
       passengerInfo: passengers,
     });
 
-    let data = await travel.save();
-    console.log("hi i am data", data);
+    const data = await travel.save();
+    console.log("Live travel data saved:", data);
       
-    res.status(201).json({ success: true, message: "Succesful", travel });
+    return res.status(201).json({ success: true, message: "Successful", travel: data });
   } catch (error) {
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error processing live PNR data:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
